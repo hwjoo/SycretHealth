@@ -8,11 +8,12 @@ import com.muhanbit.sycrethealth.view.LoginView;
  */
 
 public class LoginPresenterImpl implements LoginPresenter {
-    private LoginView loginView;
-    private LoginModel loginModel;
+    private LoginView mLoginView;
+    private LoginModel mLoginModel;
 
-    public LoginPresenterImpl(LoginView loginView) {
-        this.loginView = loginView;
+    public LoginPresenterImpl(LoginView loginView, LoginModel loginModel) {
+        this.mLoginView = loginView;
+        this.mLoginModel = loginModel;
     }
 
     @Override
