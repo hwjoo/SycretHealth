@@ -10,7 +10,6 @@ import com.muhanbit.sycrethealth.model.LoginModelImpl;
 import com.muhanbit.sycrethealth.presenter.LoginPresenter;
 import com.muhanbit.sycrethealth.presenter.LoginPresenterImpl;
 import com.muhanbit.sycrethealth.view.LoginView;
-import com.sycretware.auth.Environment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,22 +31,23 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
+        if(!SycretWare.isInit()){
+            SycretWare.init(getBaseContext());
+        }
         LoginModel loginModel = new LoginModelImpl();
         loginPresenter = new LoginPresenterImpl(this, loginModel);
-
 
 
 
     }
 
     @OnClick(R.id.login_btn) void loginBtnClick(){
-        if(Environment.initialize(this)) {
-            String userId = mUserId.getText().toString();
-            String password = mPassword.getText().toString();
-            String pin = mPin.getText().toString();
-            loginPresenter.sendLoginRequest(userId, password, pin);
+        String userId = mUserId.getText().toString();
+        String password = mPassword.getText().toString();
+        String pin = mPin.getText().toString();
+        loginPresenter.sendLoginRequest(userId, password, pin);
 
-        }
     }
 
 }

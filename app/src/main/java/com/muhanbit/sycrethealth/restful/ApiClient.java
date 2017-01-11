@@ -1,4 +1,4 @@
-package com.muhanbit.sycrethealth;
+package com.muhanbit.sycrethealth.restful;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
