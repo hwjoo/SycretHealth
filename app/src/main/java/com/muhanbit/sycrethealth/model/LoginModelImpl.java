@@ -1,5 +1,7 @@
 package com.muhanbit.sycrethealth.model;
 
+import android.content.Context;
+
 import com.muhanbit.sycrethealth.json.LoginRequest;
 
 /**
@@ -7,5 +9,8 @@ import com.muhanbit.sycrethealth.json.LoginRequest;
  */
 
 public class LoginModelImpl implements LoginModel {
-
+    public Context mContext;
+    public LoginModelImpl(Context context){
+        this.mContext = context;
+    }
 }

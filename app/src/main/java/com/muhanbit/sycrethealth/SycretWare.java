@@ -1,6 +1,7 @@
 package com.muhanbit.sycrethealth;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.sycretware.auth.Environment;
 import com.sycretware.auth.KeyStore;
@@ -23,6 +24,7 @@ public class SycretWare {
         if(mProvider == null){
             mProvider = new Provider();
         }
+
         return mProvider;
 
     }
@@ -34,6 +36,10 @@ public class SycretWare {
         }else{
             return null;
         }
+    }
+    public static String getDeviceSerial(){
+        Log.d("TEST", mProvider.deviceSerial());
+        return mProvider.deviceSerial();
     }
 
     public static void init(Context context) {

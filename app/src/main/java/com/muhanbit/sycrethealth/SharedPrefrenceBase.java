@@ -2,6 +2,9 @@ package com.muhanbit.sycrethealth;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 /**
  * Created by hwjoo on 2017. 1. 11..
@@ -25,4 +28,5 @@ public class SharedPrefrenceBase {
 
         return editor;
     }
+
 }

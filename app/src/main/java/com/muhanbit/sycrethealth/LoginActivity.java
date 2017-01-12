@@ -1,5 +1,6 @@
 package com.muhanbit.sycrethealth;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
@@ -25,6 +26,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     @BindView(R.id.login_btn) Button mLoginBtn;
 
     LoginPresenter loginPresenter;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         if(!SycretWare.isInit()){
             SycretWare.init(getBaseContext());
         }
-        LoginModel loginModel = new LoginModelImpl();
+        LoginModel loginModel = new LoginModelImpl(getBaseContext());
         loginPresenter = new LoginPresenterImpl(this, loginModel);
 
     }
@@ -50,8 +52,27 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     @Override
-    public void showLoginErrorCode(String errorCode) {
+    public void showPersonaErrorCode(String errorCode) {
         Toast.makeText(LoginActivity.this, errorCode, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showLoginState(String status) {
+        Toast.makeText(LoginActivity.this, status, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void progressOnOff(boolean on) {
+
+        if(on){
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("잠시만 기다려주세요");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }else{
+            progressDialog.dismiss();
+        }
     }
 }
 

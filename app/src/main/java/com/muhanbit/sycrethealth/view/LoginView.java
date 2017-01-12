@@ -5,5 +5,7 @@ package com.muhanbit.sycrethealth.view;
  */
 
 public interface LoginView {
-    void showLoginErrorCode(String errorCode);
+    void showPersonaErrorCode(String errorCode);
+    void showLoginState(String status);
+    void progressOnOff(boolean on);
 }

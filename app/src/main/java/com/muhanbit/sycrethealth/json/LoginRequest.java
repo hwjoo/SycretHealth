@@ -5,20 +5,20 @@ package com.muhanbit.sycrethealth.json;
  */
 
 public class LoginRequest {
-    String userid;
+    String userId;
     String password;
 
     public LoginRequest(String userid, String password) {
-        this.userid = userid;
+        this.userId = userid;
         this.password = password;
     }
 
-    public String getUserid() {
-        return userid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getPassword() {

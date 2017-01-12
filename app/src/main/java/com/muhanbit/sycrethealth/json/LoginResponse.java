@@ -5,4 +5,27 @@ package com.muhanbit.sycrethealth.json;
  */
 
 public class LoginResponse {
+    String  response;
+    String responseMsgCd;
+
+    public LoginResponse(String response, String responseMsgCd) {
+        this.response = response;
+        this.responseMsgCd = responseMsgCd;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
+
+    public String getResponseMsgCd() {
+        return responseMsgCd;
+    }
+
+    public void setResponseMsgCd(String responseMsgCd) {
+        this.responseMsgCd = responseMsgCd;
+    }
 }
