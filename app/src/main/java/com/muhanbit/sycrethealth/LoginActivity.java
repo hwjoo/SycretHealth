@@ -1,11 +1,10 @@
 package com.muhanbit.sycrethealth;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.muhanbit.sycrethealth.model.LoginModel;
 import com.muhanbit.sycrethealth.model.LoginModelImpl;
@@ -27,8 +26,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     LoginPresenter loginPresenter;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,17 +38,20 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         LoginModel loginModel = new LoginModelImpl();
         loginPresenter = new LoginPresenterImpl(this, loginModel);
 
-
-
     }
 
-    @OnClick(R.id.login_btn) void loginBtnClick(){
+    @OnClick(R.id.login_btn)
+    void loginBtnClick(){
         String userId = mUserId.getText().toString();
         String password = mPassword.getText().toString();
         String pin = mPin.getText().toString();
-        loginPresenter.sendLoginRequest(userId, password, pin);
+        loginPresenter.sendPersonaRequest(userId, password, pin);
 
     }
 
+    @Override
+    public void showLoginErrorCode(String errorCode) {
+        Toast.makeText(LoginActivity.this, errorCode, Toast.LENGTH_SHORT).show();
+    }
 }
 

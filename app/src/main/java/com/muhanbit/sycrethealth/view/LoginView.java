@@ -5,5 +5,5 @@ package com.muhanbit.sycrethealth.view;
  */
 
 public interface LoginView {
-
+    void showLoginErrorCode(String errorCode);
 }
