@@ -78,5 +78,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             progressDialog.dismiss();
         }
     }
+
+    @Override
+    public void showPinErrorDialog() {
+
+
+    }
 }
 

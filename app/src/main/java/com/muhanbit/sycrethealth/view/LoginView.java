@@ -8,4 +8,5 @@ public interface LoginView {
     void showPersonaErrorCode(String errorCode);
     void showLoginState(String status);
     void progressOnOff(boolean on);
+    void showPinErrorDialog();
 }
