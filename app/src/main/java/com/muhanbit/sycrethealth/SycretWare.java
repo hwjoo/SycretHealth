@@ -1,12 +1,16 @@
 package com.muhanbit.sycrethealth;
 
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 
+import com.sycretware.auth.DataStore;
 import com.sycretware.auth.Environment;
 import com.sycretware.auth.KeyStore;
 import com.sycretware.auth.Provider;
 import com.sycretware.obj.ExportKey;
+
+import static android.util.Base64.encodeToString;
 
 /**
  * Created by hwjoo on 2017. 1. 11..
@@ -45,6 +49,10 @@ public class SycretWare {
     public static void init(Context context) {
         Environment.initialize(context);
         isInit = true;
+    }
+    public static String getDeviceIdBas64Encoded(){
+        String encodedString = Base64.encodeToString(mProvider.data.getDeviceID(),Base64.NO_WRAP);
+        return encodedString;
     }
     public static boolean isInit(){
         return isInit;

@@ -20,9 +20,9 @@ import retrofit2.http.Path;
 
 public interface ApiInterface {
 
-    @POST("/healthcare/Login/{deviceSerial}")
+    @POST("/healthcare/Login/{deviceId}")
     Call<LoginResponse> requestLogin(
-            @Path("deviceSerial") String deviceSerial,
+            @Path("deviceId") String deviceId,
             @Body EncRequest loginEncRequest);
 
 }

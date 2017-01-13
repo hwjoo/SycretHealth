@@ -8,6 +8,10 @@ public class LoginResponse {
     String  response;
     String responseMsgCd;
 
+    public LoginResponse(){
+
+    }
+
     public LoginResponse(String response, String responseMsgCd) {
         this.response = response;
         this.responseMsgCd = responseMsgCd;

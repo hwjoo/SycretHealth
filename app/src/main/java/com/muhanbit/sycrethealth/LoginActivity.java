@@ -40,6 +40,10 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         LoginModel loginModel = new LoginModelImpl(getBaseContext());
         loginPresenter = new LoginPresenterImpl(this, loginModel);
 
+        mUserId.setText("user");
+        mPassword.setText("123456");
+        mPin.setText("123456");
+
     }
 
     @OnClick(R.id.login_btn)
