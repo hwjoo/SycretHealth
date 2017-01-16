@@ -7,6 +7,6 @@ import android.view.View;
  * Created by hwjoo on 2017-01-13.
  */
 
-public interface MainView {
+public interface ContainerView {
     void setupViewPager(ViewPager viewPager);
 }

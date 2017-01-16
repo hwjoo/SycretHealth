@@ -8,6 +8,7 @@ import com.sycretware.auth.DataStore;
 import com.sycretware.auth.Environment;
 import com.sycretware.auth.KeyStore;
 import com.sycretware.auth.Provider;
+import com.sycretware.auth.ShareData;
 import com.sycretware.obj.ExportKey;
 
 import static android.util.Base64.encodeToString;
@@ -52,6 +53,8 @@ public class SycretWare {
     }
     public static String getDeviceIdBas64Encoded(){
         String encodedString = Base64.encodeToString(mProvider.data.getDeviceID(),Base64.NO_WRAP);
+
+
         return encodedString;
     }
     public static boolean isInit(){

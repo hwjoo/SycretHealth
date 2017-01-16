@@ -17,6 +17,10 @@ public class ThreeFragment extends Fragment {
 
         return threeFragment;
     }
+
+    public ThreeFragment() {
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

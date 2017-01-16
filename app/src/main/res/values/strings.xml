@@ -15,4 +15,6 @@
         completions."
     </string>
     <string name="pin">PIN</string>
+    <string name="action_set_time">시간설정</string>
+    <string name="action_reset_time">시간 초기화</string>
 </resources>
