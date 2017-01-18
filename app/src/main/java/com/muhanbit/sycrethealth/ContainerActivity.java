@@ -42,21 +42,17 @@ public class ContainerActivity extends AppCompatActivity implements ContainerVie
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
             public void onPageSelected(int position) {
-                Log.d("TEST","onPageSelected : "+position);
-                if(position ==0 || position==2){
+                if(position!=1){
                     appBarLayout.setExpanded(true,true);
                 }
 
             }
-
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
 

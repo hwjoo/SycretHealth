@@ -75,6 +75,11 @@ public class RecordFragment extends Fragment implements RecordFragView {
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10),true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(recordAdapter);
+
+        /*
+         * start test
+         * 임시 test용. 삭제해야함
+         */
         ArrayList testList = new ArrayList();
         for (int i =0; i<10; i++){
             Record record = new Record(String.valueOf(i),"10:00","12:00","2017-01-18");
@@ -82,6 +87,9 @@ public class RecordFragment extends Fragment implements RecordFragView {
         }
         recordAdapter.setRecords(testList);
         recordAdapter.notifyDataSetChanged();
+        /*
+         * end test
+         */
 
         RecordFragModel recordFragModel = new RecordFragModelImpl();
         mRecordPresenter = new RecordFragPresenterImpl(this, recordFragModel); // presenter에 view, model;
