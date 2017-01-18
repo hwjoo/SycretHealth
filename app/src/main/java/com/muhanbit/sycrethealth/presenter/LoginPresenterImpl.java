@@ -36,7 +36,7 @@ import retrofit2.Response;
  */
 
 public class LoginPresenterImpl implements LoginPresenter {
-    private static final String PERSONA_URL ="http://192.168.1.108:8080/healthcare/";
+    private static final String PERSONA_URL ="http://192.168.1.108:8080/healthcare";
     private LoginView mLoginView;
     private LoginModel mLoginModel;
 
@@ -67,8 +67,8 @@ public class LoginPresenterImpl implements LoginPresenter {
                 try {
                     if(provider.init(pin)) {
                         ExportKey trKey = provider.keyStore.getSecretKey(KeyStore.KEY_TRAFFIC);
-                        if(trKey == null){
-//                        if(true){
+//                        if(trKey == null){
+                        if(true){
                             if(provider.secureConnect.connectEnroll(PERSONA_URL, userId, password)){
                                 return true;
                             }else{

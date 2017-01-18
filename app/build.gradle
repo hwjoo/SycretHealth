@@ -11,6 +11,10 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        // Enabling multidex suppor
+        multiDexEnabled true
+
+
         ndk {
             abiFilters "armeabi" //, "armeabi-v7a", "x86", "mips"
         }
