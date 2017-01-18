@@ -5,10 +5,19 @@ package com.muhanbit.sycrethealth;
  */
 
 public class Record {
+    /*
+     * recyclreview item & Database 전달 객체로 사용
+     *  id는 sqlite primary key값 저장, sqlite 내부 data 삭제시 id값 이용
+     */
+    int id;
     String step;
     String startTime;
     String endTime;
     String date;
+
+    public Record(){
+
+    }
 
     public Record(String step, String startTime, String endTime, String date) {
         this.step = step;
@@ -47,5 +56,13 @@ public class Record {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

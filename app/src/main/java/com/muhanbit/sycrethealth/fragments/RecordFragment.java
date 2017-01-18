@@ -127,6 +127,7 @@ public class RecordFragment extends Fragment implements RecordFragView {
                     outRect.top = spacing;
                 }
                 outRect.bottom = spacing;
+
             }else{
                 outRect.left = column * spacing / spanCount;
                 outRect.right = spacing - (column + 1) * spacing / spanCount;

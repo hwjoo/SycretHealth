@@ -3,7 +3,6 @@ package com.muhanbit.sycrethealth.fragments;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -20,12 +19,12 @@ import android.widget.Toast;
 
 import com.muhanbit.sycrethealth.PedometerService;
 import com.muhanbit.sycrethealth.R;
+import com.muhanbit.sycrethealth.model.MainFragModel;
+import com.muhanbit.sycrethealth.model.MainFragModelImpl;
 import com.muhanbit.sycrethealth.presenter.MainFragPresenter;
 import com.muhanbit.sycrethealth.presenter.MainFragPresenterImpl;
 import com.muhanbit.sycrethealth.view.MainFragView;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
-
-import org.w3c.dom.Text;
 
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
@@ -79,7 +78,8 @@ public class MainFragment extends Fragment implements MainFragView,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_fragment, container, false);
-        mMainFragPresenter = new MainFragPresenterImpl(this);
+        MainFragModel mainFragModel = new MainFragModelImpl(getContext());
+        mMainFragPresenter = new MainFragPresenterImpl(this, mainFragModel);
 
         ButterKnife.bind(this, view);
         mMainFragPresenter.initCircleProgress(mCircleProgressView);

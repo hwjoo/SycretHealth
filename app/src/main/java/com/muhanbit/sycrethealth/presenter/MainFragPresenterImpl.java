@@ -7,6 +7,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.muhanbit.sycrethealth.PedometerService;
+import com.muhanbit.sycrethealth.model.MainFragModel;
 import com.muhanbit.sycrethealth.view.MainFragView;
 
 import at.grabner.circleprogress.CircleProgressView;
@@ -17,12 +18,14 @@ import at.grabner.circleprogress.TextMode;
  */
 
 public class MainFragPresenterImpl implements MainFragPresenter {
-    static MainFragView mMainFragView;
+    public static MainFragView mMainFragView;
+    public MainFragModel mMainFragModel;
     private boolean startFlag;
 
 
-    public MainFragPresenterImpl(MainFragView fragView) {
+    public MainFragPresenterImpl(MainFragView fragView, MainFragModel mainFragModel) {
         this.mMainFragView = fragView;
+        this.mMainFragModel = mainFragModel;
         startFlag = true;
     }
     public static MainFragView getmMainFragView(){
