@@ -2,11 +2,14 @@ package com.muhanbit.sycrethealth.view;
 
 import android.content.Context;
 
+import com.muhanbit.sycrethealth.presenter.LoginPresenter;
+import com.muhanbit.sycrethealth.presenter.LoginPresenterImpl;
+
 /**
  * Created by hwjoo on 2017-01-13.
  */
 
-public interface MainFragView {
+public interface MainFragView{
     void showToast(String toast);
     void showTimePicker();
     void showPopupMenu();
@@ -15,6 +18,10 @@ public interface MainFragView {
     void setTime(int totalTime, int remainTime);
     int getCurrentMinute();
     void changeBtnText(String chText);
-    void showSaveDialog();
+    void showSaveDialog(String startTime, String endTime, String date);
+    void progressOnOff(boolean on);
+
+
+
 
 }

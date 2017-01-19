@@ -1,24 +1,20 @@
 package com.muhanbit.sycrethealth;
 
-import android.app.IntentService;
 import android.app.Service;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.muhanbit.sycrethealth.presenter.MainFragPresenter;
 import com.muhanbit.sycrethealth.presenter.MainFragPresenterImpl;
-import com.muhanbit.sycrethealth.view.MainFragView;
 
-import static android.os.Build.VERSION_CODES.M;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by hwjoo on 2017-01-17.
@@ -45,6 +41,11 @@ public class PedometerService extends Service implements SensorEventListener {
     public static int count;
     public static int totalMinute;
     public static int remainMinute;
+
+    private String mStartTime;
+    private String mEndTime;
+    private String mDate;
+
 
 
 
@@ -100,6 +101,14 @@ public class PedometerService extends Service implements SensorEventListener {
 
         totalMinute = intent.getIntExtra("total_minute",0);
         remainMinute = totalMinute;
+        /*
+         * 현재 시간 get
+         */
+        Date startDt = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+        mStartTime = sdf.format(startDt).toString();
+        Log.d("TEST","service 시작 시간"+ mStartTime);
+
         TimeHandler timeHandler = new TimeHandler();
         timeThread = new TimeThread(timeHandler);
         timeThread.start();
@@ -114,6 +123,14 @@ public class PedometerService extends Service implements SensorEventListener {
         Log.d("TEST", "service ondestroy");
         if(sensorManager !=null){
             sensorManager.unregisterListener(this);
+            Date endDt = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+            mEndTime = sdf.format(endDt).toString();
+            SimpleDateFormat dateSdf = new SimpleDateFormat("yyyy-MM-dd");
+            mDate = dateSdf.format(endDt).toString();
+            MainFragPresenterImpl.getmMainFragView().showSaveDialog(mStartTime, mEndTime, mDate);
+            Log.d("TEST","service 끝 시간"+ mEndTime);
+            Log.d("TEST","service 날짜"+ mDate);
         }
         if(timeThread != null){
             timeThread.setRun(false);
@@ -138,7 +155,7 @@ public class PedometerService extends Service implements SensorEventListener {
             if(remainMinute == 0){
                 Intent intent = new Intent(getBaseContext(), PedometerService.class);
                 stopService(intent);
-                MainFragPresenterImpl.getmMainFragView().showSaveDialog();
+//                MainFragPresenterImpl.getmMainFragView().showSaveDialog();
                 /*
                  * 앱 종료시, view도 같이 죽기때문에, showSaveDialog()호출시 NullPointerException 발생
                  * 완료시 WakefulBroadcast로 받아서 activity로 전달필요.

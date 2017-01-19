@@ -1,12 +1,14 @@
 package com.muhanbit.sycrethealth.presenter;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.util.Base64;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.muhanbit.sycrethealth.ContainerActivity;
+import com.muhanbit.sycrethealth.Encrypt;
 import com.muhanbit.sycrethealth.SycretWare;
 import com.muhanbit.sycrethealth.json.EncRequest;
 import com.muhanbit.sycrethealth.json.LoginRequest;
@@ -20,16 +22,14 @@ import com.sycretware.auth.Provider;
 import com.sycretware.crypto.Hash;
 import com.sycretware.exception.PersonalizationDeviceUnknownException;
 import com.sycretware.obj.ExportKey;
-import com.muhanbit.sycrethealth.Encrypt;
-
-import org.bouncycastle.util.encoders.Hex;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 /**
  * Created by hwjoo on 2017-01-11.
@@ -37,6 +37,7 @@ import retrofit2.Response;
 
 public class LoginPresenterImpl implements LoginPresenter {
     private static final String PERSONA_URL ="http://192.168.1.108:8080/healthcare";
+    private static final String DB_KEY = "db_key";
     private LoginView mLoginView;
     private LoginModel mLoginModel;
 
@@ -66,10 +67,49 @@ public class LoginPresenterImpl implements LoginPresenter {
                 Provider provider =  SycretWare.getProvider();
                 try {
                     if(provider.init(pin)) {
+                        ExportKey localKey = provider.keyStore.getSecretKey(KeyStore.KEY_LOCAL);
+                        if(localKey == null){
+                            errorCode = "local key not found";
+                            return false;
+                        }
                         ExportKey trKey = provider.keyStore.getSecretKey(KeyStore.KEY_TRAFFIC);
-//                        if(trKey == null){
-                        if(true){
+                        /*
+                         * start
+                         * test 진행 후 삭제
+                         */
+                        Log.d("TEST","serial num : "+SycretWare.getDeviceSerial());
+                        if(provider.data.getStoreKey() == null){
+                            String dbKey = UUID.randomUUID().toString();
+                            String encDbKey = provider.encrypt.encryptBase64(com.sycretware.security.Encrypt.ENCRYPT, dbKey,"UTF-8", localKey);
+                            try {
+                                if(provider.data.putStoreKey(encDbKey.getBytes("UTF-8"))){
+                                    Log.d("TEST"," put db key 완료, db key :" + dbKey);
+                                }
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        }else{
+                            String  dbkey = SycretWare.getDBKey();
+                            Log.d("TEST", "db key :"+ dbkey);
+                        }
+                         /*
+                         * end
+                         * test 진행 후 삭제
+                         */
+                        if(trKey == null){
+//                        if(true){
                             if(provider.secureConnect.connectEnroll(PERSONA_URL, userId, password)){
+                                if(provider.data.getStoreKey() == null){
+                                    String dbKey = UUID.randomUUID().toString();
+                                    String encDbKey = provider.encrypt.encryptBase64(com.sycretware.security.Encrypt.ENCRYPT, dbKey,"UTF-8", localKey);
+                                    try {
+                                        if(provider.data.putStoreKey(encDbKey.getBytes("UTF-8"))){
+                                            Log.d("TEST"," put db key 완료, db key :" + dbKey);
+                                        }
+                                    } catch (UnsupportedEncodingException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                                 return true;
                             }else{
                                 errorCode = "SecureConnect Fail";
@@ -110,6 +150,9 @@ public class LoginPresenterImpl implements LoginPresenter {
      *  실제 상용서비스에서는 traffic key를 사용해 서버 통신 암복호화진행,
      *  but, 현재 기능구현 부족으로, 내부 Encrypt class를 통해 password hash값으로
      *  암복호화 진행
+     *
+     *  tempTrKey는 실제 trkey를 대체하여 사용. tempTrKey = deviceid를 base64 encoding한 값을 hash하여
+     *  key로 사용.
      */
     @Override
     public void sendLoginRequest(String userId, String password) {
@@ -145,9 +188,10 @@ public class LoginPresenterImpl implements LoginPresenter {
                     mLoginView.progressOnOff(false);
                     if(response.body().getResponse().equals("SUCCESS")){
                         mLoginView.showLoginState("Login success");
+                        Intent intent = new Intent(mLoginView.getViewContext(), ContainerActivity.class);
+                        mLoginView.startNextActivity(intent);
                     }else if(response.body().getResponse().equals("FAIL")){
                         mLoginView.showLoginState("Login Fail :"+response.body().getResponseMsgCd());
-//                        SycretWare.getProvider().closeSession();
                     }
                     Log.d("TEST", response.body().getResponse());
                     Log.d("TEST", response.body().getResponseMsgCd());

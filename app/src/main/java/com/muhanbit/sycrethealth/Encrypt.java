@@ -16,7 +16,13 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Created by hwjoo on 2017-01-13.
  */
-
+/*
+ * 서버 통신할 경우, json 암호화에 사용된다.
+ *  ex) { "request" : "Encrypt.encrypt로 암호화된 json"}
+ *  서버에서 request를 get하여, 암호화된 data를 복호화한다.
+ *  복호화된 data는 json형태이다. 따라서
+ *   ex ) {"request" : " {"id":"1","step":"100"} " } 이런 형태가 된다.
+ */
 public class Encrypt {
     public Encrypt() {
     }

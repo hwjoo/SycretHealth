@@ -25,6 +25,13 @@ public class Record {
         this.endTime = endTime;
         this.date = date;
     }
+    public Record(int id, String step, String startTime, String endTime, String date) {
+        this.id = id;
+        this.step = step;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.date = date;
+    }
 
     public String getStep() {
         return step;

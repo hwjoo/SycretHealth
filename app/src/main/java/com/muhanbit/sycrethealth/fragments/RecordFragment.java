@@ -1,5 +1,6 @@
 package com.muhanbit.sycrethealth.fragments;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -98,6 +99,16 @@ public class RecordFragment extends Fragment implements RecordFragView {
 
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public Context getViewContext() {
+        return getContext();
     }
 
     @Override

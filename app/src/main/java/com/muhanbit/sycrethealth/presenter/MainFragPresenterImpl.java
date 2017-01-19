@@ -3,15 +3,23 @@ package com.muhanbit.sycrethealth.presenter;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.muhanbit.sycrethealth.PedometerService;
+import com.muhanbit.sycrethealth.Record;
 import com.muhanbit.sycrethealth.model.MainFragModel;
 import com.muhanbit.sycrethealth.view.MainFragView;
 
+import java.util.ArrayList;
+
 import at.grabner.circleprogress.CircleProgressView;
 import at.grabner.circleprogress.TextMode;
+
+import static android.R.attr.id;
+import static org.bouncycastle.asn1.x500.style.RFC4519Style.o;
 
 /**
  * Created by hwjoo on 2017-01-16.
@@ -98,8 +106,8 @@ public class MainFragPresenterImpl implements MainFragPresenter {
         }else{
             Toast.makeText(mMainFragView.getViewContext(), "stop", Toast.LENGTH_SHORT).show();
             mMainFragView.getViewContext().stopService(intent);
-            mMainFragView.changeBtnText("START");
-            mMainFragView.showSaveDialog();
+//            mMainFragView.changeBtnText("START");
+//            mMainFragView.showSaveDialog();
             startFlag = true;
         }
         return true;
@@ -108,7 +116,6 @@ public class MainFragPresenterImpl implements MainFragPresenter {
     /*
      * service 실행여부 판단.
      */
-
     @Override
     public boolean isServiceRunningCheck(String servicename) {
         ActivityManager manager = (ActivityManager) mMainFragView.getViewContext().getSystemService(Activity.ACTIVITY_SERVICE);
@@ -118,8 +125,50 @@ public class MainFragPresenterImpl implements MainFragPresenter {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean insertStepInfo(final String step, final String startTime, final String endTime, final String date) {
+        final Record saveRecord = new Record(step,startTime,endTime,date);
+        new AsyncTask<Void,Void,Long>(){
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                mMainFragView.progressOnOff(true);
+            }
+
+            @Override
+            protected Long doInBackground(Void... voids) {
+                return mMainFragModel.insertData(saveRecord);
+            }
+
+            @Override
+            protected void onPostExecute(Long result) {
+                super.onPostExecute(result);
+                /*
+                 * Sqlite insert 실패 -> -1 반환, 성공 -> 1 이상 반환(0 미포함)
+                 * 따라서 반환 id가 -1보다 크면 성공
+                 * sqlite에 저장완료되면 server로 date 전송
+                 */
+                if(result >-1){
+                    mMainFragView.showToast("DATA 저장 완료");
+                    sendStepRequest();
+                }else{
+                    mMainFragView.showToast("DATA 저장 error");
+                    mMainFragView.progressOnOff(false);
+                }
+
+            }
+        }.execute();
 
 
+        return id >-1;
+    }
+    @Override
+    public boolean sendStepRequest() {
+        mMainFragView.progressOnOff(false);
+        return false;
     }
 
 

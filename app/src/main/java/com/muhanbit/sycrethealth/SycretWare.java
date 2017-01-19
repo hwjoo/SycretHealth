@@ -10,6 +10,9 @@ import com.sycretware.auth.KeyStore;
 import com.sycretware.auth.Provider;
 import com.sycretware.auth.ShareData;
 import com.sycretware.obj.ExportKey;
+import com.sycretware.security.*;
+
+import java.io.UnsupportedEncodingException;
 
 import static android.util.Base64.encodeToString;
 
@@ -43,7 +46,6 @@ public class SycretWare {
         }
     }
     public static String getDeviceSerial(){
-        Log.d("TEST", mProvider.deviceSerial());
         return mProvider.deviceSerial();
     }
 
@@ -56,6 +58,19 @@ public class SycretWare {
 
 
         return encodedString;
+    }
+    public static String getDBKey(){
+        String decDBKey = "";
+        try {
+            String encDBKey = new String(mProvider.data.getStoreKey(), "UTF-8");
+            decDBKey = mProvider.encrypt.encryptBase64(com.sycretware.security.Encrypt.DECRYPT,
+                    encDBKey,"UTF-8", mProvider.keyStore.getSecretKey(KeyStore.KEY_LOCAL));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
+        return decDBKey;
     }
     public static boolean isInit(){
         return isInit;

@@ -55,6 +55,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
     public RecordAdapter(Context mContext) {
         this.mContext = mContext;
     }
+
     public void setRecords(ArrayList<Record> records){
         this.mRecords = records;
     }

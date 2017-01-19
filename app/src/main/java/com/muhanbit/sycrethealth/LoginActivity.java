@@ -1,6 +1,8 @@
 package com.muhanbit.sycrethealth;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
@@ -83,6 +85,16 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     public void showPinErrorDialog() {
 
 
+    }
+
+    @Override
+    public Context getViewContext() {
+        return getBaseContext();
+    }
+
+    @Override
+    public void startNextActivity(Intent intent) {
+        startActivity(intent);
     }
 }
 

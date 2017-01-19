@@ -21,14 +21,19 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginActivity">
-
         </activity>
 
-        <service android:name=".PedometerService" />
+        <service android:name=".PedometerService" >
+
+        </service>
 
         <activity android:name=".PinChangeActivity">
 
         </activity>
+
+        <receiver android:name=".PedometerBroadcast">
+
+        </receiver>
     </application>
 
 </manifest>

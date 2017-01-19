@@ -10,6 +10,9 @@ import java.util.ArrayList;
  */
 
 public interface AdapterContract {
+    /*
+     * adapter
+     */
     interface RecordView{
         void notifyAdapter();
         void setDeleteClickListener(OnDeleteClickListener listener);

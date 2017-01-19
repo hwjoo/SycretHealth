@@ -5,6 +5,10 @@ import android.content.Context;
 import com.muhanbit.sycrethealth.DBHandler;
 import com.muhanbit.sycrethealth.Record;
 
+import java.util.ArrayList;
+
+import static android.R.attr.id;
+
 /**
  * Created by hwjoo on 2017. 1. 18..
  */
@@ -20,19 +24,25 @@ public class MainFragModelImpl implements MainFragModel {
     }
 
     @Override
-    public void insertData(Record record) {
-        DBHandler dbHandler = DBHandler.getInstance(mContext,1);
-        dbHandler.addRecord(record);
-
+    public long insertData(Record record) {
+        DBHandler dbHandler = DBHandler.getInstance(mContext);
+        long id = dbHandler.addRecord(record);
+        return id;
     }
 
     @Override
     public boolean deleteData(Record record) {
-        DBHandler dbHandler = DBHandler.getInstance(mContext,1);
+        DBHandler dbHandler = DBHandler.getInstance(mContext);
         if(dbHandler.deleteRecord(record)){
             return true;
         }
         return false;
+    }
+
+    @Override
+    public ArrayList<Record> selectAllData() {
+        DBHandler dbHandler = DBHandler.getInstance(mContext);
+        return dbHandler.selectAllRecord();
     }
 
 }

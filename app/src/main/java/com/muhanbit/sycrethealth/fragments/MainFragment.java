@@ -1,9 +1,12 @@
 package com.muhanbit.sycrethealth.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.Gravity;
@@ -51,7 +54,11 @@ public class MainFragment extends Fragment implements MainFragView,
     @BindView(R.id.step_text)
     TextView stepText;
 
+
     MainFragPresenter mMainFragPresenter;
+    ProgressDialog progressDialog;
+
+
 
 
     public static MainFragment newInstance(){
@@ -83,6 +90,7 @@ public class MainFragment extends Fragment implements MainFragView,
 
         ButterKnife.bind(this, view);
         mMainFragPresenter.initCircleProgress(mCircleProgressView);
+
 
         return view;
     }
@@ -185,16 +193,59 @@ public class MainFragment extends Fragment implements MainFragView,
     }
 
     @Override
-    public void showSaveDialog() {
-        this.showToast("완료되었습니다.");
+    public void showSaveDialog(final String startTime, final String endTime, final String date) {
         this.changeBtnText("START");
         /*
-         * dialog 추가 후 아래 initCircleProgress 지우고,
-         * dailog  저장 / 초기화 버튼 중 초기화 버튼 클릭시
-         * initCircleProgress실행하도록 로직변경.
+         * PedometerService가 종료되고, onDestroy에서
+         * start time, end time을 전달한다.(service 시작 시간, service 끝나는시간)
+         * date는 presenter에서 db에 저장할때 그 시점의 date를 저장
+         * step은 textview에 getText를 통해서 get
+         *  presenter에 start time, end time, step 갯수 전달.
+         *  presenter에서 model로 start time, endtime, step, date전달하여 SQLite에 저장
          */
-        mMainFragPresenter.initCircleProgress(mCircleProgressView);
-        mMainFragPresenter.initStep(stepText);
+        final String stepCount = stepText.getText().toString();
+
+        View dialogView = getActivity().getLayoutInflater().inflate(R.layout.custom_dialog, null);
+        DialogHolder dialogHolder = new DialogHolder(dialogView);
+        dialogHolder.onBind(stepCount,startTime+" - "+endTime,date);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Step save").setIcon(R.mipmap.ic_launcher).setView(dialogView)
+                .setPositiveButton("저장", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                       mMainFragPresenter.insertStepInfo(stepCount,
+                             startTime, endTime, date);
+                        mMainFragPresenter.initCircleProgress(mCircleProgressView);
+                        mMainFragPresenter.initStep(stepText);
+                    }
+                })
+                .setNegativeButton("초기화", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mMainFragPresenter.initCircleProgress(mCircleProgressView);
+                        mMainFragPresenter.initStep(stepText);
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+
+
+    }
+
+    @Override
+    public void progressOnOff(boolean on) {
+        if(on){
+            progressDialog = new ProgressDialog(getContext());
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("잠시만 기다려주세요");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }else{
+            progressDialog.dismiss();
+        }
     }
 
     /*
@@ -217,5 +268,24 @@ public class MainFragment extends Fragment implements MainFragView,
                 break;
         }
         return false;
+    }
+    /*
+     * CustomDialog Holder
+     */
+    public class DialogHolder{
+        @BindView(R.id.dialog_step)
+        TextView dialogStep;
+        @BindView(R.id.dialog_time)
+        TextView dialogTime;
+        @BindView(R.id.dialog_date)
+        TextView dialogDate;
+        public DialogHolder(View view){
+            ButterKnife.bind(this,view);
+        }
+        public void onBind(String step, String time, String date){
+            dialogStep.setText(step);
+            dialogTime.setText(time);
+            dialogDate.setText(date);
+        }
     }
 }

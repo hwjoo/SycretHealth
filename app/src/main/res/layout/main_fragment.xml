@@ -82,6 +82,7 @@
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:text="START"/>
+
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 

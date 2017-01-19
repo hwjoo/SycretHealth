@@ -38,6 +38,10 @@ public class RecordFragPresenterImpl implements RecordFragPresenter,OnDeleteClic
      */
     @Override
     public void onDeleteClick(int position) {
+        /*
+         * Record 들의 getId로 database의 primary key를 알 수 있다.
+         * 따라서, primary key로 dabase 접근하여, data 삭제한다.
+         */
         Record record = mRecordAdapterModel.getItem(position);
         mRecordFragView.showToast(record.getStep());
 
