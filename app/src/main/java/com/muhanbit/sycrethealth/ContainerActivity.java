@@ -30,6 +30,19 @@ public class ContainerActivity extends AppCompatActivity implements ContainerVie
     @BindView(R.id.viewpager)
     CustomViewPager viewPager;
 
+    public OnInsertListener mOnInsertListener;
+    public interface OnInsertListener{
+        void onInserted();
+    }
+    public void setOnInsertListener(OnInsertListener listener){
+        mOnInsertListener = listener;
+    }
+    public void insertedRecord(){
+        if(mOnInsertListener !=null){
+            mOnInsertListener.onInserted();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

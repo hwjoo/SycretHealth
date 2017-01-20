@@ -12,7 +12,7 @@ import com.muhanbit.sycrethealth.Encrypt;
 import com.muhanbit.sycrethealth.SycretWare;
 import com.muhanbit.sycrethealth.json.EncRequest;
 import com.muhanbit.sycrethealth.json.LoginRequest;
-import com.muhanbit.sycrethealth.json.LoginResponse;
+import com.muhanbit.sycrethealth.json.JsonResponse;
 import com.muhanbit.sycrethealth.model.LoginModel;
 import com.muhanbit.sycrethealth.restful.ApiClient;
 import com.muhanbit.sycrethealth.restful.ApiInterface;
@@ -171,18 +171,18 @@ public class LoginPresenterImpl implements LoginPresenter {
 
             EncRequest encRequest = new EncRequest(encJsonString);
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-            Call<LoginResponse> call = apiService.requestLogin(SycretWare.getDeviceIdBas64Encoded(), encRequest);
+            Call<JsonResponse> call = apiService.requestLogin(SycretWare.getDeviceIdBas64Encoded(), encRequest);
             Log.d("TEST", String.valueOf(call.request().url()));
-            call.enqueue(new Callback<LoginResponse>() {
+            call.enqueue(new Callback<JsonResponse>() {
                 @Override
-                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                public void onResponse(Call<JsonResponse> call, Response<JsonResponse> response) {
                     /*
                      * responseMsgCd :
                      * USER_NOTFOUND (사용자존재 하지않을경우)
 	                 * USER_AUTH_FAIL (사용자 인증 실패)
 	                 * SYSTEM_ERROR (시스템 에러 Exception )
                      */
-                    LoginResponse loginResponse = response.body();
+                    JsonResponse loginResponse = response.body();
                     String responseState= loginResponse.getResponse();
                     String responseMsgCd= loginResponse.getResponseMsgCd();
                     mLoginView.progressOnOff(false);
@@ -198,7 +198,7 @@ public class LoginPresenterImpl implements LoginPresenter {
 
                 }
                 @Override
-                public void onFailure(Call<LoginResponse> call, Throwable t) {
+                public void onFailure(Call<JsonResponse> call, Throwable t) {
                     mLoginView.progressOnOff(false);
                     Log.d("TEST","fail :"+ t.toString());
                 }

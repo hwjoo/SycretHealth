@@ -1,10 +1,12 @@
 package com.muhanbit.sycrethealth;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -56,10 +58,6 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
         this.mContext = mContext;
     }
 
-    public void setRecords(ArrayList<Record> records){
-        this.mRecords = records;
-    }
-
     @Override
     public RecordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -68,7 +66,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
     }
 
     @Override
-    public void onBindViewHolder(RecordViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecordViewHolder holder, final int position) {
         if(holder == null) return;
         holder.onBind(mRecords.get(position), position);
         holder.deleteImg.setOnClickListener(new View.OnClickListener() {
@@ -76,9 +74,22 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
             public void onClick(View view) {
                 if(mOnDeleteClickListener !=null){
                     mOnDeleteClickListener.onDeleteClick(position);
+
+                    ValueAnimator animator = new ValueAnimator().ofFloat(0,360);
+                    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                            float value = (float) valueAnimator.getAnimatedValue();
+                            holder.deleteImg.setRotation(value);
+                        }
+                    });
+                    animator.setInterpolator(new LinearInterpolator());
+                    animator.setDuration(500);
+                    animator.start();
                 }
             }
         });
+
     }
 
     @Override
@@ -86,9 +97,28 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
         return mRecords !=null ? mRecords.size() : 0;
     }
 
+     /*
+      * 아래부터 AdapterContract.RecordModel의 Override method.
+      */
+
     @Override
-    public void addRecordItem(ArrayList<Record> records) {
+    public void setRecords(ArrayList<Record> records){
         this.mRecords = records;
+    }
+
+    @Override
+    public void addRecordItem(Record record) {
+        if(this.mRecords != null){
+            this.mRecords.add(record);
+        }
+
+    }
+
+    @Override
+    public void removeRecordItem(int position) {
+        if(this.mRecords !=null && this.mRecords.size() !=0){
+            this.mRecords.remove(position);
+        }
     }
 
     @Override
@@ -110,6 +140,13 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
 
     @Override
     public void setDeleteClickListener(OnDeleteClickListener listener) {
+        /*
+         * RecordFragPresenterImpl에서 OnDeleteClickLister를 implement하였기 때문에 다형성에 의해
+         * 파라미터 listenr는 RecordPresenterImpl이되고, OnDeleteClcikListener의 onDeleteClick이
+         * RecordPresenterImpl에 override되어있다. 따라서, holder의 deleteImage에 setOnclickListener를
+         * 연결하여 onclick시, mOnDeleteClickListener.onDeleteClick으로 preseter에서 처리하도록
+         * 넘겨줄수 있다.
+         */
         this.mOnDeleteClickListener = listener;
     }
 

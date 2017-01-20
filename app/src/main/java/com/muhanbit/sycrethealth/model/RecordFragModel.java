@@ -11,5 +11,6 @@ import java.util.ArrayList;
 
 public interface RecordFragModel {
 
-    ArrayList<Record> selectRecords();
+    ArrayList<Record> selectRecords(int selectOrder);
+    boolean deleteSelectedRecord(int primaryKey);
 }

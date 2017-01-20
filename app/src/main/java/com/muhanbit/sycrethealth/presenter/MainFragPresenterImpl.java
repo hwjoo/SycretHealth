@@ -6,20 +6,27 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.muhanbit.sycrethealth.Encrypt;
 import com.muhanbit.sycrethealth.PedometerService;
 import com.muhanbit.sycrethealth.Record;
+import com.muhanbit.sycrethealth.SycretWare;
+import com.muhanbit.sycrethealth.json.EncRequest;
+import com.muhanbit.sycrethealth.json.JsonResponse;
+import com.muhanbit.sycrethealth.json.RecordInsertRequest;
 import com.muhanbit.sycrethealth.model.MainFragModel;
+import com.muhanbit.sycrethealth.restful.ApiClient;
+import com.muhanbit.sycrethealth.restful.ApiInterface;
 import com.muhanbit.sycrethealth.view.MainFragView;
-
-import java.util.ArrayList;
+import com.sycretware.crypto.Hash;
 
 import at.grabner.circleprogress.CircleProgressView;
 import at.grabner.circleprogress.TextMode;
-
-import static android.R.attr.id;
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.o;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by hwjoo on 2017-01-16.
@@ -89,7 +96,7 @@ public class MainFragPresenterImpl implements MainFragPresenter {
     public boolean clickActionBtn() {
 
         if(mMainFragView.getCurrentMinute()==0){
-            mMainFragView.showToast("시간설정 후 시작하세요.");
+            mMainFragView.showSnackBar("시간설정 후 시작하세요.");
             return false;
         }
         if(!this.isServiceRunningCheck("com.muhanbit.sycrethealth.PedometerService")){
@@ -98,13 +105,11 @@ public class MainFragPresenterImpl implements MainFragPresenter {
 
         Intent intent = new Intent(mMainFragView.getViewContext(), PedometerService.class);
         if(startFlag && !this.isServiceRunningCheck("com.muhanbit.sycrethealth.PedometerService")){
-            Toast.makeText(mMainFragView.getViewContext(), "start", Toast.LENGTH_SHORT).show();
             intent.putExtra("total_minute",mMainFragView.getCurrentMinute());
             mMainFragView.getViewContext().startService(intent);
             mMainFragView.changeBtnText("STOP");
             startFlag=false;
         }else{
-            Toast.makeText(mMainFragView.getViewContext(), "stop", Toast.LENGTH_SHORT).show();
             mMainFragView.getViewContext().stopService(intent);
 //            mMainFragView.changeBtnText("START");
 //            mMainFragView.showSaveDialog();
@@ -130,7 +135,9 @@ public class MainFragPresenterImpl implements MainFragPresenter {
     @Override
     public boolean insertStepInfo(final String step, final String startTime, final String endTime, final String date) {
         final Record saveRecord = new Record(step,startTime,endTime,date);
-        new AsyncTask<Void,Void,Long>(){
+        final boolean[] insertFlag = {false};
+
+        new AsyncTask<Void,Void,Record>(){
 
             @Override
             protected void onPreExecute() {
@@ -139,23 +146,31 @@ public class MainFragPresenterImpl implements MainFragPresenter {
             }
 
             @Override
-            protected Long doInBackground(Void... voids) {
-                return mMainFragModel.insertData(saveRecord);
+            protected Record doInBackground(Void... voids) {
+                Record savedRecord = null;
+                if(mMainFragModel.insertData(saveRecord)> -1){
+                    savedRecord = mMainFragModel.selectLastInserted();
+                }
+
+                return savedRecord;
             }
 
             @Override
-            protected void onPostExecute(Long result) {
+            protected void onPostExecute(Record result) {
                 super.onPostExecute(result);
                 /*
                  * Sqlite insert 실패 -> -1 반환, 성공 -> 1 이상 반환(0 미포함)
                  * 따라서 반환 id가 -1보다 크면 성공
                  * sqlite에 저장완료되면 server로 date 전송
                  */
-                if(result >-1){
-                    mMainFragView.showToast("DATA 저장 완료");
-                    sendStepRequest();
+                if(result !=null){
+                    mMainFragView.showSnackBar("DATA 저장 완료");
+                    mMainFragView.getContainer().insertedRecord(); //insert되었다는것은 RecordFragment로 전달
+                    insertFlag[0] = true;
+                    sendInsertRequest(result);
+
                 }else{
-                    mMainFragView.showToast("DATA 저장 error");
+                    mMainFragView.showSnackBar("DATA 저장 error");
                     mMainFragView.progressOnOff(false);
                 }
 
@@ -163,13 +178,66 @@ public class MainFragPresenterImpl implements MainFragPresenter {
         }.execute();
 
 
-        return id >-1;
+        return insertFlag[0];
     }
     @Override
-    public boolean sendStepRequest() {
-        mMainFragView.progressOnOff(false);
-        return false;
+    public boolean sendInsertRequest(Record record) {
+        /*
+         * 추가적인 web server insert MySQL
+         */
+        final boolean[] requestFlag = {false};
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            /*
+             * new RecordInsertRequest("user" 는 sharedprefrence의 user id를 꺼내서 사용할예정.
+             */
+            RecordInsertRequest recordInsertRequest = new RecordInsertRequest(
+                    "user",record.getId(),record.getStep(),record.getStartTime(),
+                    record.getEndTime(),record.getDate()
+            );
+            String jsonString = mapper.writeValueAsString(recordInsertRequest);
+            String tempTrKey = Hash.HashString((String)null, SycretWare.getDeviceIdBas64Encoded());
+            String encJsonString = Encrypt.encrypt(true, jsonString,tempTrKey);
+
+            EncRequest encRequest = new EncRequest(encJsonString);
+            ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+            Call<JsonResponse> call = apiService.requestInsertRecord(SycretWare.getDeviceIdBas64Encoded(), encRequest);
+            Log.d("TEST", String.valueOf(call.request().url()));
+            call.enqueue(new Callback<JsonResponse>() {
+                @Override
+                public void onResponse(Call<JsonResponse> call, Response<JsonResponse> response) {
+                    /*
+                     * responseMsgCd :
+                     *
+                     */
+                    JsonResponse insertResponse = response.body();
+                    String responseState= insertResponse.getResponse();
+                    String responseMsgCd= insertResponse.getResponseMsgCd();
+                    mMainFragView.progressOnOff(false);
+                    if(response.body().getResponse().equals("SUCCESS")){
+                        mMainFragView.showSnackBar("서버 저장 SUCCESS");
+                        requestFlag[0] =true;
+                    }else if(response.body().getResponse().equals("FAIL")){
+                        mMainFragView.showSnackBar("서버 저장 FAIL");
+                    }
+                    Log.d("TEST", response.body().getResponse());
+                    Log.d("TEST", response.body().getResponseMsgCd());
+
+                }
+                @Override
+                public void onFailure(Call<JsonResponse> call, Throwable t) {
+                    mMainFragView.progressOnOff(false);
+                    Log.d("TEST","fail :"+ t.toString());
+                }
+            });
+        } catch (JsonProcessingException e) {
+            mMainFragView.progressOnOff(false);
+            Log.d("TEST",e.toString());
+        }
+
+        return requestFlag[0];
     }
+
 
 
 }

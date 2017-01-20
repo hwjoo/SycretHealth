@@ -4,15 +4,15 @@ package com.muhanbit.sycrethealth.json;
  * Created by hwjoo on 2017-01-12.
  */
 
-public class LoginResponse {
+public class JsonResponse {
     String  response;
     String responseMsgCd;
 
-    public LoginResponse(){
+    public JsonResponse(){
 
     }
 
-    public LoginResponse(String response, String responseMsgCd) {
+    public JsonResponse(String response, String responseMsgCd) {
         this.response = response;
         this.responseMsgCd = responseMsgCd;
     }

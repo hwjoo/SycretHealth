@@ -1,16 +1,10 @@
 package com.muhanbit.sycrethealth.restful;
 
-import android.util.Base64;
-
-import com.muhanbit.sycrethealth.SycretWare;
 import com.muhanbit.sycrethealth.json.EncRequest;
-import com.muhanbit.sycrethealth.json.LoginResponse;
-import com.sycretware.auth.DataStore;
-import com.sycretware.lib.Session;
+import com.muhanbit.sycrethealth.json.JsonResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -21,8 +15,18 @@ import retrofit2.http.Path;
 public interface ApiInterface {
 
     @POST("/healthcare/Login/{deviceId}")
-    Call<LoginResponse> requestLogin(
+    Call<JsonResponse> requestLogin(
             @Path("deviceId") String deviceId,
             @Body EncRequest loginEncRequest);
+
+    @POST("/healthcare/Record/Register/{deviceId}")
+    Call<JsonResponse> requestInsertRecord(
+            @Path("deviceId") String deviceId,
+            @Body EncRequest insertEncRequest);
+
+    @POST("/healthcare/Record/Delete/{deviceId}")
+    Call<JsonResponse> requestDeleteRecord(
+            @Path("deviceId") String deviceId,
+            @Body EncRequest delteEncRequest);
 
 }

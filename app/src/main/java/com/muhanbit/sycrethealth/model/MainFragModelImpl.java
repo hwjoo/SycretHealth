@@ -31,18 +31,8 @@ public class MainFragModelImpl implements MainFragModel {
     }
 
     @Override
-    public boolean deleteData(Record record) {
+    public Record selectLastInserted() {
         DBHandler dbHandler = DBHandler.getInstance(mContext);
-        if(dbHandler.deleteRecord(record)){
-            return true;
-        }
-        return false;
+        return dbHandler.selectLastRecord();
     }
-
-    @Override
-    public ArrayList<Record> selectAllData() {
-        DBHandler dbHandler = DBHandler.getInstance(mContext);
-        return dbHandler.selectAllRecord();
-    }
-
 }

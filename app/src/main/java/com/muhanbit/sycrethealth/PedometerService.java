@@ -131,6 +131,7 @@ public class PedometerService extends Service implements SensorEventListener {
             MainFragPresenterImpl.getmMainFragView().showSaveDialog(mStartTime, mEndTime, mDate);
             Log.d("TEST","service 끝 시간"+ mEndTime);
             Log.d("TEST","service 날짜"+ mDate);
+            count =0; // count 초기화
         }
         if(timeThread != null){
             timeThread.setRun(false);

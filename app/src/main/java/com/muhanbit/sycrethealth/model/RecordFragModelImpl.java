@@ -17,11 +17,20 @@ public class RecordFragModelImpl implements RecordFragModel {
         this.mContext = context;
     }
     @Override
-    public ArrayList<Record> selectRecords() {
+    public ArrayList<Record> selectRecords(int selectOrder) {
         DBHandler dbHandler = DBHandler.getInstance(mContext);
         /*
          * selectAllRecord size 0이면 data 없음
          */
-        return dbHandler.selectAllRecord();
+        return dbHandler.selectAllRecord(selectOrder);
+    }
+
+    @Override
+    public boolean deleteSelectedRecord(int primaryKey) {
+        DBHandler dbHandler = DBHandler.getInstance(mContext);
+        /*
+         * 삭제성공 -> true / 실패 -> false 반환
+         */
+        return dbHandler.deleteRecord(primaryKey);
     }
 }

@@ -18,7 +18,9 @@ public interface AdapterContract {
         void setDeleteClickListener(OnDeleteClickListener listener);
     }
     interface RecordModel{
-        void addRecordItem(ArrayList<Record> records);
+        void setRecords(ArrayList<Record> records);
+        void addRecordItem(Record record);
+        void removeRecordItem(int position);
         void clearItem();
         Record getItem(int position);
     }

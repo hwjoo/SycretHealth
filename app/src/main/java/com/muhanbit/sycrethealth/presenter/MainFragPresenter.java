@@ -21,7 +21,7 @@ public interface MainFragPresenter {
     boolean clickActionBtn();
     boolean isServiceRunningCheck(String serviceName);
     boolean insertStepInfo(String step, String startTime, String endTime, String date);
-    boolean sendStepRequest();
+    boolean sendInsertRequest(Record record);
 
 
 }

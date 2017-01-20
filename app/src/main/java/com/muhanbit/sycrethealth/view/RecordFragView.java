@@ -8,5 +8,7 @@ import android.content.Context;
 
 public interface RecordFragView {
     Context getViewContext();
-    void showToast(String toast);
+    void showSnackBar(String message);
+    void progressOnOff(boolean on);
+    void showDeleteDialog(int position);
 }

@@ -10,6 +10,5 @@ import java.util.ArrayList;
 
 public interface MainFragModel {
     long insertData(Record record);
-    boolean deleteData(Record record);
-    ArrayList<Record> selectAllData();
+    Record selectLastInserted();
 }

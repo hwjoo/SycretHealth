@@ -2,6 +2,7 @@ package com.muhanbit.sycrethealth.view;
 
 import android.content.Context;
 
+import com.muhanbit.sycrethealth.ContainerActivity;
 import com.muhanbit.sycrethealth.presenter.LoginPresenter;
 import com.muhanbit.sycrethealth.presenter.LoginPresenterImpl;
 
@@ -10,7 +11,7 @@ import com.muhanbit.sycrethealth.presenter.LoginPresenterImpl;
  */
 
 public interface MainFragView{
-    void showToast(String toast);
+    void showSnackBar(String message);
     void showTimePicker();
     void showPopupMenu();
     Context getViewContext();
@@ -20,6 +21,7 @@ public interface MainFragView{
     void changeBtnText(String chText);
     void showSaveDialog(String startTime, String endTime, String date);
     void progressOnOff(boolean on);
+    ContainerActivity getContainer();
 
 
 

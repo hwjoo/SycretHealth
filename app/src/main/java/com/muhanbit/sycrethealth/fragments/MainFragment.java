@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.muhanbit.sycrethealth.ContainerActivity;
 import com.muhanbit.sycrethealth.PedometerService;
 import com.muhanbit.sycrethealth.R;
 import com.muhanbit.sycrethealth.model.MainFragModel;
@@ -55,9 +57,11 @@ public class MainFragment extends Fragment implements MainFragView,
     TextView stepText;
 
 
-    MainFragPresenter mMainFragPresenter;
-    ProgressDialog progressDialog;
+    private MainFragPresenter mMainFragPresenter;
+    private ProgressDialog progressDialog;
 
+    private ContainerActivity mContainer;
+    private View mContainerView; // snack bar를 사용하기 위한 View
 
 
 
@@ -76,6 +80,12 @@ public class MainFragment extends Fragment implements MainFragView,
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContainer = (ContainerActivity) getActivity();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -87,9 +97,10 @@ public class MainFragment extends Fragment implements MainFragView,
         View view = inflater.inflate(R.layout.main_fragment, container, false);
         MainFragModel mainFragModel = new MainFragModelImpl(getContext());
         mMainFragPresenter = new MainFragPresenterImpl(this, mainFragModel);
-
         ButterKnife.bind(this, view);
         mMainFragPresenter.initCircleProgress(mCircleProgressView);
+
+        mContainerView = container;
 
 
         return view;
@@ -124,8 +135,8 @@ public class MainFragment extends Fragment implements MainFragView,
     }
 
     @Override
-    public void showToast(String toast) {
-        Toast.makeText(getContext(), toast, Toast.LENGTH_SHORT).show();
+    public void showSnackBar(String message) {
+        Snackbar.make(mContainerView, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -173,7 +184,6 @@ public class MainFragment extends Fragment implements MainFragView,
         }
         mCircleProgressView.setMaxValue(totalMinute);
         mCircleProgressView.setValueAnimated(refInt,remainTime,1000);
-
         int hour = remainTime/60;
         int minute = remainTime%60;
         mCircleProgressView.setText(hour+"시간 "+minute+"분");
@@ -217,6 +227,7 @@ public class MainFragment extends Fragment implements MainFragView,
 
                        mMainFragPresenter.insertStepInfo(stepCount,
                              startTime, endTime, date);
+
                         mMainFragPresenter.initCircleProgress(mCircleProgressView);
                         mMainFragPresenter.initStep(stepText);
                     }
@@ -246,6 +257,11 @@ public class MainFragment extends Fragment implements MainFragView,
         }else{
             progressDialog.dismiss();
         }
+    }
+
+    @Override
+    public ContainerActivity getContainer() {
+        return mContainer;
     }
 
     /*
