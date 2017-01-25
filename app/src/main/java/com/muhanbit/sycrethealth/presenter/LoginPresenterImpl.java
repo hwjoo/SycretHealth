@@ -1,14 +1,14 @@
 package com.muhanbit.sycrethealth.presenter;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.muhanbit.sycrethealth.ContainerActivity;
 import com.muhanbit.sycrethealth.Encrypt;
+import com.muhanbit.sycrethealth.SharedPreferenceBase;
 import com.muhanbit.sycrethealth.SycretWare;
 import com.muhanbit.sycrethealth.json.EncRequest;
 import com.muhanbit.sycrethealth.json.LoginRequest;
@@ -36,7 +36,8 @@ import retrofit2.Response;
  */
 
 public class LoginPresenterImpl implements LoginPresenter {
-    private static final String PERSONA_URL ="http://192.168.1.108:8080/healthcare";
+//    private static final String PERSONA_URL ="http://192.168.1.108:8080/healthcare";
+    private static final String PERSONA_URL ="http://192.168.100.168:8080/healthcare";
     private static final String DB_KEY = "db_key";
     private LoginView mLoginView;
     private LoginModel mLoginModel;
@@ -73,31 +74,38 @@ public class LoginPresenterImpl implements LoginPresenter {
                             return false;
                         }
                         ExportKey trKey = provider.keyStore.getSecretKey(KeyStore.KEY_TRAFFIC);
-                        /*
-                         * start
-                         * test 진행 후 삭제
-                         */
+
                         Log.d("TEST","serial num : "+SycretWare.getDeviceSerial());
                         if(provider.data.getStoreKey() == null){
                             String dbKey = UUID.randomUUID().toString();
-                            String encDbKey = provider.encrypt.encryptBase64(com.sycretware.security.Encrypt.ENCRYPT, dbKey,"UTF-8", localKey);
+                            Log.d("TEST", "dbkey put : "+ dbKey);
+                            Log.d("TEST", "dbkey put SIZE : "+ dbKey.getBytes().length);
                             try {
-                                if(provider.data.putStoreKey(encDbKey.getBytes("UTF-8"))){
-                                    Log.d("TEST"," put db key 완료, db key :" + dbKey);
-                                }
+                                provider.data.putStoreKey(dbKey.getBytes("UTF-8"));
                             } catch (UnsupportedEncodingException e) {
                                 e.printStackTrace();
                             }
                         }else{
-                            String  dbkey = SycretWare.getDBKey();
-                            Log.d("TEST", "db key :"+ dbkey);
+                            byte[] dbByteKey =provider.data.getStoreKey();
+                            Log.d("TEST", "dbkey get size : "+ dbByteKey.length);
+                            try {
+                                String dbKey =  new String(dbByteKey,0, 36,"UTF-8");
+                                Log.d("TEST", "dbkey get : "+ dbKey);
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
                         }
-                         /*
+//                        if(trKey == null){
+                          /*
+                         * start
+                         * test 진행 후 삭제
+                         */
+
+                        if(true){
+                        /*
                          * end
                          * test 진행 후 삭제
                          */
-                        if(trKey == null){
-//                        if(true){
                             if(provider.secureConnect.connectEnroll(PERSONA_URL, userId, password)){
                                 if(provider.data.getStoreKey() == null){
                                     String dbKey = UUID.randomUUID().toString();
@@ -155,21 +163,21 @@ public class LoginPresenterImpl implements LoginPresenter {
      *  key로 사용.
      */
     @Override
-    public void sendLoginRequest(String userId, String password) {
+    public void sendLoginRequest(final String userId, String password) {
 
         try {
 //            ExportKey trKey = SycretWare.getEncryptionKey(SycretWare.TRAFFIC_KEY);
             String pwHash = Hash.HashString((String)null,password);
-            LoginRequest loginRequest = new LoginRequest(userId,pwHash);
-            ObjectMapper mapper = new ObjectMapper();
+            final LoginRequest loginRequest = new LoginRequest(userId,pwHash);
+            final ObjectMapper mapper = new ObjectMapper();
 
-            String jsonString = mapper.writeValueAsString(loginRequest);
+            final String jsonString = mapper.writeValueAsString(loginRequest);
 //            String encJsonString =SycretWare.getProvider().encrypt.encryptBase64(
 //                    Encrypt.ENCRYPT,jsonString,"UTF-8",trKey);
             String tempTrKey = Hash.HashString((String)null,SycretWare.getDeviceIdBas64Encoded());
-            String encJsonString = Encrypt.encrypt(true, jsonString,tempTrKey);
+            final String encJsonString = Encrypt.encrypt(true, jsonString,tempTrKey);
 
-            EncRequest encRequest = new EncRequest(encJsonString);
+            final EncRequest encRequest = new EncRequest(encJsonString);
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
             Call<JsonResponse> call = apiService.requestLogin(SycretWare.getDeviceIdBas64Encoded(), encRequest);
             Log.d("TEST", String.valueOf(call.request().url()));
@@ -188,10 +196,46 @@ public class LoginPresenterImpl implements LoginPresenter {
                     mLoginView.progressOnOff(false);
                     if(response.body().getResponse().equals("SUCCESS")){
                         mLoginView.showLoginState("Login success");
-                        Intent intent = new Intent(mLoginView.getViewContext(), ContainerActivity.class);
-                        mLoginView.startNextActivity(intent);
+//                        Intent intent = new Intent(mLoginView.getViewContext(), ContainerActivity.class);
+//                        mLoginView.startNextActivity(intent);
+                        /*
+                         * test용, 실제 json과 encJson을 textView에 show.
+                         * 이후 확인버튼 visible -> click시 nextActivity
+                         */
+                        try {
+                            String encJsonForm = mapper.writeValueAsString(encRequest);
+                            String responseString = mapper.writeValueAsString(loginResponse);
+                            mLoginView.showInvisibleWidget(jsonString, encJsonForm, responseString);
+                            /*
+                             * Tab 3. Log 남기기.
+                             */
+                            com.muhanbit.sycrethealth.Log log = com.muhanbit.sycrethealth.Log.getInstance();
+                            log.addRequestLog("Login Json Request :"+jsonString);
+                            log.addRequestLog("Login EncJson Request :"+encJsonForm);
+                            log.addResponseLog("Login Json Response :"+responseString);
+
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                        }
+                        /*
+                         * Login 성공 후 SharedPreference에 user id 저장.
+                         * 이후 server 통신시 사용
+                         */
+                        SharedPreferences sp = SharedPreferenceBase.getSharedPreferences(mLoginView.getViewContext());
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString(SharedPreferenceBase.USER_ID, userId);
+                        editor.commit();
+
+
                     }else if(response.body().getResponse().equals("FAIL")){
                         mLoginView.showLoginState("Login Fail :"+response.body().getResponseMsgCd());
+                        try {
+                            String encJsonForm = mapper.writeValueAsString(encRequest);
+                            String responseString = mapper.writeValueAsString(loginResponse);
+                            mLoginView.showInvisibleWidget(jsonString, encJsonForm, responseString);
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                        }
                     }
                     Log.d("TEST", response.body().getResponse());
                     Log.d("TEST", response.body().getResponseMsgCd());

@@ -14,4 +14,5 @@ public interface LoginView {
     void showPinErrorDialog();
     Context getViewContext();
     void startNextActivity(Intent intent);
+    void showInvisibleWidget(String jsonData, String encJsonData, String jsonResponseData);
 }

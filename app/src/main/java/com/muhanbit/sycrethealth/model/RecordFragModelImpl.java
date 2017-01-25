@@ -33,4 +33,10 @@ public class RecordFragModelImpl implements RecordFragModel {
          */
         return dbHandler.deleteRecord(primaryKey);
     }
+
+    @Override
+    public Record selectLastInserted() {
+        DBHandler dbHandler = DBHandler.getInstance(mContext);
+        return dbHandler.selectLastRecord();
+    }
 }

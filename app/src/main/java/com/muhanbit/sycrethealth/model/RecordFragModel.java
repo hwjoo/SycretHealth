@@ -13,4 +13,5 @@ public interface RecordFragModel {
 
     ArrayList<Record> selectRecords(int selectOrder);
     boolean deleteSelectedRecord(int primaryKey);
+    Record selectLastInserted();
 }

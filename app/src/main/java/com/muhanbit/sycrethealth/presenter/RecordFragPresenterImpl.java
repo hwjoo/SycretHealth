@@ -10,6 +10,8 @@ import com.muhanbit.sycrethealth.DBHandler;
 import com.muhanbit.sycrethealth.Encrypt;
 import com.muhanbit.sycrethealth.OnDeleteClickListener;
 import com.muhanbit.sycrethealth.Record;
+import com.muhanbit.sycrethealth.RecordAddedDecStep;
+import com.muhanbit.sycrethealth.SharedPreferenceBase;
 import com.muhanbit.sycrethealth.SycretWare;
 import com.muhanbit.sycrethealth.contract.AdapterContract;
 import com.muhanbit.sycrethealth.json.EncRequest;
@@ -20,6 +22,7 @@ import com.muhanbit.sycrethealth.restful.ApiClient;
 import com.muhanbit.sycrethealth.restful.ApiInterface;
 import com.muhanbit.sycrethealth.view.RecordFragView;
 import com.sycretware.crypto.Hash;
+import com.sycretware.obj.ExportKey;
 
 import java.util.ArrayList;
 
@@ -67,9 +70,25 @@ public class RecordFragPresenterImpl implements RecordFragPresenter,OnDeleteClic
         Handler initHandler = new Handler();
         mRecordFragView.progressOnOff(true);
         initHandler.post(new Runnable() {
+            /*
+             * RecordAddedDecStep은 Record를 상속받은 class로
+             * 다형성에 의해 아래와 같이 ArrayList<Record>에 저장 가능.
+             */
             @Override
             public void run() {
-                ArrayList<Record> initRecords = mRecordFragModel.selectRecords(DBHandler.ORDER_BY_DESC);
+                ArrayList<Record> refInitRecords = mRecordFragModel.selectRecords(DBHandler.ORDER_BY_DESC);
+                ArrayList<Record> initRecords = new ArrayList<Record>();
+                ExportKey localKey = SycretWare.getEncryptionKey(SycretWare.LOCAL_KEY);
+                for(Record record : refInitRecords){
+                    String decStepString = SycretWare.getProvider().encrypt.encryptBase64(
+                            com.sycretware.security.Encrypt.DECRYPT,record.getStep(),"UTF-8",localKey
+                    );
+                   RecordAddedDecStep recordAddedDecStep = new RecordAddedDecStep(record.getStep(),
+                           decStepString, record.getStartTime(), record.getEndTime(), record.getDate(),
+                           record.getId());
+                   initRecords.add(recordAddedDecStep);
+                }
+
                 mRecordAdapterModel.setRecords(initRecords);
                 mRecordAdapterView.notifyAdapter();
                 mRecordFragView.progressOnOff(false);
@@ -95,7 +114,17 @@ public class RecordFragPresenterImpl implements RecordFragPresenter,OnDeleteClic
             @Override
             public void run() {
                 ArrayList<Record> initRecords = mRecordFragModel.selectRecords(DBHandler.ORDER_BY_DESC);
-                mRecordAdapterModel.setRecords(initRecords);
+                Record seletedRecord = mRecordFragModel.selectLastInserted();
+                ExportKey localKey = SycretWare.getEncryptionKey(SycretWare.LOCAL_KEY);
+                String decStepString = SycretWare.getProvider().encrypt.encryptBase64(
+                        com.sycretware.security.Encrypt.DECRYPT,seletedRecord.getStep(),"UTF-8",
+                        localKey);
+                RecordAddedDecStep recordAddedDecStep = new RecordAddedDecStep(seletedRecord.getStep(),
+                        decStepString, seletedRecord.getStartTime(), seletedRecord.getEndTime(), seletedRecord.getDate(),
+                        seletedRecord.getId());
+
+//                mRecordAdapterModel.setRecords(initRecords);
+                mRecordAdapterModel.addRecordItem(recordAddedDecStep);
                 mRecordAdapterView.notifyAdapter();
                 mRecordFragView.progressOnOff(false);
             }
@@ -153,19 +182,23 @@ public class RecordFragPresenterImpl implements RecordFragPresenter,OnDeleteClic
          */
         final boolean[] requestFlag = {false};
         try {
-            ObjectMapper mapper = new ObjectMapper();
+            final ObjectMapper mapper = new ObjectMapper();
             /*
              * new RecordInsertRequest("user" 는 sharedprefrence의 user id를 꺼내서 사용할예정.
              */
+            String userId = SharedPreferenceBase.getSharedPreferences(mMainFragView.getViewContext())
+                    .getString(SharedPreferenceBase.USER_ID,"");
             RecordInsertRequest recordInsertRequest = new RecordInsertRequest(
-                    "user",record.getId(),record.getStep(),record.getStartTime(),
+                    userId,record.getId(),record.getStep(),record.getStartTime(),
                     record.getEndTime(),record.getDate()
             );
-            String jsonString = mapper.writeValueAsString(recordInsertRequest);
+            final String jsonString = mapper.writeValueAsString(recordInsertRequest);
             String tempTrKey = Hash.HashString((String)null, SycretWare.getDeviceIdBas64Encoded());
             String encJsonString = Encrypt.encrypt(true, jsonString,tempTrKey);
 
             EncRequest encRequest = new EncRequest(encJsonString);
+            final String encJsonForm = mapper.writeValueAsString(encRequest);
+
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
             Call<JsonResponse> call = apiService.requestDeleteRecord(SycretWare.getDeviceIdBas64Encoded(), encRequest);
             Log.d("TEST", String.valueOf(call.request().url()));
@@ -183,11 +216,24 @@ public class RecordFragPresenterImpl implements RecordFragPresenter,OnDeleteClic
                     if(response.body().getResponse().equals("SUCCESS")){
                         mRecordFragView.showSnackBar("서버 삭제 SUCCESS");
                         requestFlag[0] =true;
+
                     }else if(response.body().getResponse().equals("FAIL")){
                         mRecordFragView.showSnackBar("서버 저장 FAIL");
                     }
                     Log.d("TEST", response.body().getResponse());
                     Log.d("TEST", response.body().getResponseMsgCd());
+                    /*
+                     * Log 남기기
+                     */
+                    try {
+                        String responseString = mapper.writeValueAsString(insertResponse);
+                        com.muhanbit.sycrethealth.Log log = com.muhanbit.sycrethealth.Log.getInstance();
+                        log.addRequestLog("Delete Json Request :"+jsonString);
+                        log.addRequestLog("Delete EncJson Request :"+encJsonForm);
+                        log.addResponseLog("Delete Json Response :"+responseString);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
 
                 }
                 @Override

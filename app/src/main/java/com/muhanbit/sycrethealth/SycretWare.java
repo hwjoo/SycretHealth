@@ -60,17 +60,21 @@ public class SycretWare {
         return encodedString;
     }
     public static String getDBKey(){
-        String decDBKey = "";
+        /*
+         * put dbkey byte array length 36
+         * default getStoreKey()-> byte array length 48
+         * 따라서 아래와 같이 new String으로 36size로 잘라서 사용.
+         */
+        String dbKey = "";
+        byte[] dbByteKey =mProvider.data.getStoreKey();
+        Log.d("TEST", "dbkey get size : "+ dbByteKey.length);
         try {
-            String encDBKey = new String(mProvider.data.getStoreKey(), "UTF-8");
-            decDBKey = mProvider.encrypt.encryptBase64(com.sycretware.security.Encrypt.DECRYPT,
-                    encDBKey,"UTF-8", mProvider.keyStore.getSecretKey(KeyStore.KEY_LOCAL));
+            dbKey =  new String(dbByteKey,0, 36,"UTF-8");
+            Log.d("TEST", "dbkey get : "+ dbKey);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        } catch (NullPointerException e){
-            e.printStackTrace();
         }
-        return decDBKey;
+        return dbKey;
     }
     public static boolean isInit(){
         return isInit;

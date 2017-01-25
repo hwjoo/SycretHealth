@@ -3,6 +3,7 @@ package com.muhanbit.sycrethealth;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.muhanbit.sycrethealth.contract.AdapterContract;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,21 +37,25 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
      * Adapter 내부에 view holder 정의.
      */
     public class RecordViewHolder extends RecyclerView.ViewHolder{
-        @BindView(R.id.step_record)
-        TextView stepRecord;
+        @BindView(R.id.enc_step_record)
+        TextView encStepRecord;
         @BindView(R.id.time_record)
         TextView timeRecord;
         @BindView(R.id.date_record)
         TextView dateRecord;
         @BindView(R.id.deleteImg)
         ImageView deleteImg;
+        @BindView(R.id.dec_step_record)
+        TextView decStepRecord;
 
         public RecordViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
         public void onBind(Record record, int position){
-            stepRecord.setText(record.getStep());
+            RecordAddedDecStep recordAddedDecStep = (RecordAddedDecStep) record;
+            encStepRecord.setText(record.getStep());
+            decStepRecord.setText(recordAddedDecStep.getDecStep());
             timeRecord.setText(record.getStartTime() + " - "+record.getEndTime());
             dateRecord.setText(record.getDate());
         }
@@ -74,7 +81,9 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
             public void onClick(View view) {
                 if(mOnDeleteClickListener !=null){
                     mOnDeleteClickListener.onDeleteClick(position);
-
+                    /*
+                     * animation
+                     */
                     ValueAnimator animator = new ValueAnimator().ofFloat(0,360);
                     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
@@ -108,8 +117,25 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
 
     @Override
     public void addRecordItem(Record record) {
+        /*
+         * list의 맨앞쪽에 data가 저장되어야한다. DESC순이기때문에 아래와 같은 logic 형태로!
+         * mRecords size가 0일경우 for문을 거치지 않기때문에 if-else로 나누어 0일때
+         * add method를 통해서 저장.
+         */
         if(this.mRecords != null){
-            this.mRecords.add(record);
+            Log.d("TEST", "mRecords not null");
+            if(mRecords.size()>0) {
+                for (int i = mRecords.size() - 1; i > -1; i--) {
+                    Record refRecord = mRecords.get(i);
+                    mRecords.add(i + 1, refRecord);
+                    mRecords.remove(i);
+                    if (i == 0) {
+                        mRecords.add(0, record);
+                    }
+                }
+            }else{
+                mRecords.add(record);
+            }
         }
 
     }

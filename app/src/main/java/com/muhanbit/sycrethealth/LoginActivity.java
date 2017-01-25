@@ -15,8 +15,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.muhanbit.sycrethealth.model.LoginModel;
@@ -36,6 +38,15 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     @BindView(R.id.password) EditText mPassword;
     @BindView(R.id.pin_number) EditText mPin;
     @BindView(R.id.login_btn) Button mLoginBtn;
+
+    @BindView(R.id.json_text)
+    TextView  jsonText;
+    @BindView(R.id.encjson_text)
+    TextView encJsonText;
+    @BindView(R.id.json_response_text)
+    TextView jsonResponseText;
+    @BindView(R.id.login_next_btn)
+    Button nextBtn;
 
     private static final int PERMISSION_REQUEST_CODE =100;
 
@@ -86,6 +97,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         loginPresenter.sendPersonaRequest(userId, password, pin);
 
     }
+    @OnClick(R.id.login_next_btn)
+    void nextBtnClick(){
+        Intent intent = new Intent(LoginActivity.this, ContainerActivity.class);
+        startNextActivity(intent);
+    }
 
     @Override
     public void showPersonaErrorCode(String errorCode) {
@@ -128,6 +144,17 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     @Override
+    public void showInvisibleWidget(String jsonData, String encJsonData, String jsonResponseData) {
+        jsonText.setVisibility(View.VISIBLE);
+        encJsonText.setVisibility(View.VISIBLE);
+        jsonResponseText.setVisibility(View.VISIBLE);
+        nextBtn.setVisibility(View.VISIBLE);
+        jsonText.setText("JSON : \n"+jsonData);
+        encJsonText.setText("ENCRYPTED JSON : \n"+encJsonData);
+        jsonResponseText.setText("RESPONSE JSON : \n"+jsonResponseData);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if(requestCode == PERMISSION_REQUEST_CODE){
             for(int i = 0 ; i<grantResults.length; i++){
@@ -162,8 +189,9 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
                                         Uri.parse("package:" + LoginActivity.this.getPackageName()));
                                 intent.addCategory(Intent.CATEGORY_DEFAULT);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                LoginActivity.this.startActivityForResult(intent, 101);
+                                LoginActivity.this.startActivity(intent);
                                 alertDialog.dismiss();
+                                finish();
                             }
                         })
                         .setNegativeButton("종료", new DialogInterface.OnClickListener() {
@@ -184,13 +212,5 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         }
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 101) {
-            alertDialog.dismiss();
-        }
-    }
 }
 

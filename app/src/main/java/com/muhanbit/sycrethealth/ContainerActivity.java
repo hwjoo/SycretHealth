@@ -1,19 +1,17 @@
 package com.muhanbit.sycrethealth;
 
+import android.content.Intent;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import com.muhanbit.sycrethealth.fragments.MainFragment;
-import com.muhanbit.sycrethealth.fragments.ThreeFragment;
+import com.muhanbit.sycrethealth.fragments.LogFragment;
 import com.muhanbit.sycrethealth.fragments.RecordFragment;
 import com.muhanbit.sycrethealth.view.ContainerView;
 
@@ -29,6 +27,9 @@ public class ContainerActivity extends AppCompatActivity implements ContainerVie
     TabLayout tabLayout;
     @BindView(R.id.viewpager)
     CustomViewPager viewPager;
+
+    ViewPagerAdapter mAdapter;
+
 
     public OnInsertListener mOnInsertListener;
     public interface OnInsertListener{
@@ -53,19 +54,27 @@ public class ContainerActivity extends AppCompatActivity implements ContainerVie
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
 
             @Override
             public void onPageSelected(int position) {
-                if(position!=1){
+                if(position!=2){
                     appBarLayout.setExpanded(true,true);
+                }else{
+                    appBarLayout.setExpanded(false,true);
+                    LogFragment logFragment = (LogFragment) mAdapter.getItem(position);
+                    logFragment.refreshLogText();
                 }
+
+
 
             }
             @Override
             public void onPageScrollStateChanged(int state) {
+
             }
         });
 
@@ -74,12 +83,12 @@ public class ContainerActivity extends AppCompatActivity implements ContainerVie
 
     @Override
     public void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(MainFragment.newInstance(),"메인");
-        adapter.addFragment(RecordFragment.newInstance(),"기록");
-        adapter.addFragment(ThreeFragment.newInstance(),"Three");
+        mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        mAdapter.addFragment(MainFragment.newInstance(),"메인");
+        mAdapter.addFragment(RecordFragment.newInstance(),"기록");
+        mAdapter.addFragment(LogFragment.newInstance(),"Log");
+        viewPager.setAdapter(mAdapter);
 
-        viewPager.setAdapter(adapter);
     }
 
     @Override
@@ -91,11 +100,9 @@ public class ContainerActivity extends AppCompatActivity implements ContainerVie
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.action_test :
-                Toast.makeText(ContainerActivity.this,"test",Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.action_test1 :
-                Toast.makeText(ContainerActivity.this,"test1",Toast.LENGTH_SHORT).show();
+            case R.id.action_pin_change:
+                Intent intent = new Intent(ContainerActivity.this, PinChangeActivity.class);
+                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);

@@ -74,8 +74,8 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_END_TIME, record.getEndTime());
         values.put(COLUMN_DATE, record.getDate());
 
-//        SQLiteDatabase db = this.getWritableDatabase(SycretWare.getDBKey());
-        SQLiteDatabase db = this.getWritableDatabase("abcdefg");
+        SQLiteDatabase db = this.getWritableDatabase(SycretWare.getDBKey());
+//        SQLiteDatabase db = this.getWritableDatabase("abcdefg");
 
         long id = db.insert(TABLE_NAME, null, values);
         db.close();
@@ -86,7 +86,8 @@ public class DBHandler extends SQLiteOpenHelper {
         // select * from records where id = "1";
         String query = "SELECT * FROM "+TABLE_NAME + " WHERE "+ COLUMN_ID+"= \""
                 +primaryKey+"\"";
-        SQLiteDatabase db = this.getWritableDatabase("abcdefg");
+        SQLiteDatabase db = this.getWritableDatabase(SycretWare.getDBKey());
+//        SQLiteDatabase db = this.getWritableDatabase("abcdefg");
         Cursor cursor = db.rawQuery(query, null);
         /*
          * id값으로 row를 조회한 뒤 실제 id와 조회된 id가 같은지 check 후
@@ -116,8 +117,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 query = "SELECT * FROM "+TABLE_NAME +" ORDER BY id DESC";
                 break;
         }
-//        SQLiteDatabase db = this.getWritableDatabase(SycretWare.getDBKey());
-        SQLiteDatabase db = this.getWritableDatabase("abcdefg");
+        SQLiteDatabase db = this.getWritableDatabase(SycretWare.getDBKey());
+//        SQLiteDatabase db = this.getWritableDatabase("abcdefg");
 
         Cursor cursor = db.rawQuery(query, null);
         if(cursor.moveToFirst()){
@@ -131,20 +132,24 @@ public class DBHandler extends SQLiteOpenHelper {
                 record = null;
             }
         }
+        db.close();
         return selectRecords;
     }
     public Record selectLastRecord(){
         //select * from tablename where id= "+"(select Max(id) from tablename)";
         String query ="SELECT * FROM "+TABLE_NAME+" WHERE id = "+"(SELECT MAX(id) FROM "+TABLE_NAME+")";
-        SQLiteDatabase db = this.getWritableDatabase("abcdefg");
+        SQLiteDatabase db = this.getWritableDatabase(SycretWare.getDBKey());
+//    SQLiteDatabase db = this.getWritableDatabase("abcdefg");
         Cursor cursor = db.rawQuery(query, null);
         if(cursor.moveToFirst()){
             Record record = new Record(cursor.getInt(0),cursor.getString(1),cursor.getString(2),
                     cursor.getString(3), cursor.getString(4));
+            db.close();
             return record;
-        }else{
-            return null;
         }
+        db.close();
+        return null;
+
 
     }
 }
