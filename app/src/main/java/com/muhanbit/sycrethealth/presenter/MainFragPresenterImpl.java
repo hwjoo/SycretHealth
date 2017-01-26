@@ -24,6 +24,9 @@ import com.muhanbit.sycrethealth.view.MainFragView;
 import com.sycretware.crypto.Hash;
 import com.sycretware.obj.ExportKey;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import at.grabner.circleprogress.CircleProgressView;
 import at.grabner.circleprogress.TextMode;
 import retrofit2.Call;
@@ -218,7 +221,9 @@ public class MainFragPresenterImpl implements MainFragPresenter {
             EncRequest encRequest = new EncRequest(encJsonString);
             final String encJsonForm = mapper.writeValueAsString(encRequest);
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-            Call<JsonResponse> call = apiService.requestInsertRecord(SycretWare.getDeviceIdBas64Encoded(), encRequest);
+
+            Call<JsonResponse> call = apiService.requestInsertRecord(SycretWare.getUrlEncodedDeviceId(), encRequest);
+//            Call<JsonResponse> call = apiService.requestInsertRecord(SycretWare.getDeviceIdBas64Encoded(), encRequest);
             Log.d("TEST", String.valueOf(call.request().url()));
             call.enqueue(new Callback<JsonResponse>() {
                 @Override

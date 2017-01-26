@@ -54,7 +54,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
         }
         public void onBind(Record record, int position){
             RecordAddedDecStep recordAddedDecStep = (RecordAddedDecStep) record;
-            encStepRecord.setText(record.getStep());
+            encStepRecord.setText("encrypted step \n"+record.getStep());
             decStepRecord.setText(recordAddedDecStep.getDecStep());
             timeRecord.setText(record.getStartTime() + " - "+record.getEndTime());
             dateRecord.setText(record.getDate());

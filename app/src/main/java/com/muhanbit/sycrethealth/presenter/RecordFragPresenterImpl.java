@@ -24,6 +24,8 @@ import com.muhanbit.sycrethealth.view.RecordFragView;
 import com.sycretware.crypto.Hash;
 import com.sycretware.obj.ExportKey;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -200,7 +202,8 @@ public class RecordFragPresenterImpl implements RecordFragPresenter,OnDeleteClic
             final String encJsonForm = mapper.writeValueAsString(encRequest);
 
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-            Call<JsonResponse> call = apiService.requestDeleteRecord(SycretWare.getDeviceIdBas64Encoded(), encRequest);
+
+            Call<JsonResponse> call = apiService.requestDeleteRecord(SycretWare.getUrlEncodedDeviceId(), encRequest);
             Log.d("TEST", String.valueOf(call.request().url()));
             call.enqueue(new Callback<JsonResponse>() {
                 @Override

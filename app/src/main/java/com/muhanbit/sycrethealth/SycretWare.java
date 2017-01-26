@@ -13,6 +13,7 @@ import com.sycretware.obj.ExportKey;
 import com.sycretware.security.*;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import static android.util.Base64.encodeToString;
 
@@ -58,6 +59,17 @@ public class SycretWare {
 
 
         return encodedString;
+    }
+    public static String getUrlEncodedDeviceId(){
+        String urlEncodedDeviceId = "";
+        try {
+            urlEncodedDeviceId = URLEncoder.encode(getDeviceIdBas64Encoded(),"UTF-8");
+            Log.d("TEST", "Base64 deviceId : "+SycretWare.getDeviceIdBas64Encoded());
+            Log.d("TEST", "URLEncoded deviceId : "+urlEncodedDeviceId);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return urlEncodedDeviceId;
     }
     public static String getDBKey(){
         /*

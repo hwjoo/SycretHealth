@@ -24,6 +24,7 @@ import com.sycretware.exception.PersonalizationDeviceUnknownException;
 import com.sycretware.obj.ExportKey;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.UUID;
 
 import retrofit2.Call;
@@ -179,7 +180,9 @@ public class LoginPresenterImpl implements LoginPresenter {
 
             final EncRequest encRequest = new EncRequest(encJsonString);
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-            Call<JsonResponse> call = apiService.requestLogin(SycretWare.getDeviceIdBas64Encoded(), encRequest);
+
+            Call<JsonResponse> call = apiService.requestLogin(SycretWare.getUrlEncodedDeviceId(), encRequest);
+//            Call<JsonResponse> call = apiService.requestLogin(SycretWare.getDeviceIdBas64Encoded(), encRequest);
             Log.d("TEST", String.valueOf(call.request().url()));
             call.enqueue(new Callback<JsonResponse>() {
                 @Override
@@ -190,9 +193,18 @@ public class LoginPresenterImpl implements LoginPresenter {
 	                 * USER_AUTH_FAIL (사용자 인증 실패)
 	                 * SYSTEM_ERROR (시스템 에러 Exception )
                      */
-                    JsonResponse loginResponse = response.body();
-                    String responseState= loginResponse.getResponse();
-                    String responseMsgCd= loginResponse.getResponseMsgCd();
+                    JsonResponse loginResponse = null;
+                    String responseState;
+                    String responseMsgCd;
+                    try{
+                        loginResponse = response.body();
+                        responseState= loginResponse.getResponse();
+                        responseMsgCd= loginResponse.getResponseMsgCd();
+                    }catch (NullPointerException e){
+                        mLoginView.showLoginState("response nullpointer excption");
+                        mLoginView.progressOnOff(false);
+                        return;
+                    }
                     mLoginView.progressOnOff(false);
                     if(response.body().getResponse().equals("SUCCESS")){
                         mLoginView.showLoginState("Login success");
