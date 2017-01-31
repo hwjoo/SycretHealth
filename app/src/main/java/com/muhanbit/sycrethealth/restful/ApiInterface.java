@@ -14,17 +14,17 @@ import retrofit2.http.Path;
 
 public interface ApiInterface {
 
-    @POST("/healthcare/Login/{deviceId}")
+    @POST("/Login/{deviceId}")
     Call<JsonResponse> requestLogin(
             @Path("deviceId") String deviceId,
             @Body EncRequest loginEncRequest);
 
-    @POST("/healthcare/Record/Register/{deviceId}")
+    @POST("/Record/Register/{deviceId}")
     Call<JsonResponse> requestInsertRecord(
             @Path("deviceId") String deviceId,
             @Body EncRequest insertEncRequest);
 
-    @POST("/healthcare/Record/Delete/{deviceId}")
+    @POST("/Record/Delete/{deviceId}")
     Call<JsonResponse> requestDeleteRecord(
             @Path("deviceId") String deviceId,
             @Body EncRequest delteEncRequest);
