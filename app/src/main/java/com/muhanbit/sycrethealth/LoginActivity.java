@@ -74,8 +74,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         if (Build.VERSION.SDK_INT >= 23)
         {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
@@ -88,6 +88,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             }
         }
     }
+
 
     @OnClick(R.id.login_btn)
     void loginBtnClick(){
