@@ -233,10 +233,8 @@ public class LoginPresenterImpl implements LoginPresenter {
                          * Login 성공 후 SharedPreference에 user id 저장.
                          * 이후 server 통신시 사용
                          */
-                        SharedPreferences sp = SharedPreferenceBase.getSharedPreferences(mLoginView.getViewContext());
-                        SharedPreferences.Editor editor = sp.edit();
-                        editor.putString(SharedPreferenceBase.USER_ID, userId);
-                        editor.commit();
+                        mLoginModel.putUserIdAtSp(userId);
+
 
 
                     }else if(response.body().getResponse().equals("FAIL")){

@@ -5,5 +5,6 @@ package com.muhanbit.sycrethealth.model;
  */
 
 public interface LoginModel {
+    public void putUserIdAtSp(String userId);
 
 }
