@@ -159,6 +159,9 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
         return mRecords.get(position);
     }
 
+    /*
+     * 아래부터 AdapterContract.RecordView의 Override method.
+     */
     @Override
     public void notifyAdapter() {
         notifyDataSetChanged();

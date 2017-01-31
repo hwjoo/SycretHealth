@@ -129,12 +129,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     @Override
-    public void showPinErrorDialog() {
-
-
-    }
-
-    @Override
     public Context getViewContext() {
         return getBaseContext();
     }
