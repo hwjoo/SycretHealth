@@ -5,6 +5,7 @@ import com.muhanbit.sycrethealth.json.JsonResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -13,18 +14,17 @@ import retrofit2.http.Path;
  */
 
 public interface ApiInterface {
-
-    @POST("/Login/{deviceId}")
+    @POST("/healthcare/Login/{deviceId}")
     Call<JsonResponse> requestLogin(
             @Path("deviceId") String deviceId,
             @Body EncRequest loginEncRequest);
 
-    @POST("/Record/Register/{deviceId}")
+    @POST("/healthcare/Record/Register/{deviceId}")
     Call<JsonResponse> requestInsertRecord(
             @Path("deviceId") String deviceId,
             @Body EncRequest insertEncRequest);
 
-    @POST("/Record/Delete/{deviceId}")
+    @POST("/healthcare/Record/Delete/{deviceId}")
     Call<JsonResponse> requestDeleteRecord(
             @Path("deviceId") String deviceId,
             @Body EncRequest delteEncRequest);
