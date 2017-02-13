@@ -36,8 +36,18 @@ import retrofit2.Response;
  * Created by hwjoo on 2017-01-11.
  */
 
+/*
+ * Login process : 먼저 pin 인증 후 상태체크 완료 후 유저아이디, 패스워드를 통해 로그인 시도.
+ *                 실제로 로그인 할 경우도 traffic key를 이용하여 encryption 후 data를 주고
+ *                 받기 위한 것.
+ * -login form : userId, password, pin number(MicroSD card)
+ *   -> 로그인 할 경우 sd card의 pin인증 후 sd card 상태 체크
+ *   -> 상태체크란 sd card 내부에 local key , traffic key 존재 여부 확인
+ *   -> key 존재 여부에 대한 예외처리 필수.
+ *   -> traffic key같은 경우 존재하지 않을때, App server에 traffic key 발급 요청
+ */
+
 public class LoginPresenterImpl implements LoginPresenter {
-//    private static final String PERSONA_URL ="http://192.168.1.108:8080/healthcare";
     private static final String PERSONA_URL ="http://192.168.100.168:8080/healthcare";
     private static final String DB_KEY = "db_key";
     private LoginView mLoginView;

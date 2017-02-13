@@ -9,6 +9,7 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -30,6 +31,7 @@ public class LogFragment extends Fragment {
     TextView requestLogText;
     @BindView(R.id.response_log_text)
     TextView responseLogText;
+
 
     public static LogFragment newInstance(){
         LogFragment logFragment = new LogFragment();

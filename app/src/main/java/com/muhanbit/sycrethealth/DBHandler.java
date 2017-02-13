@@ -75,7 +75,6 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_DATE, record.getDate());
 
         SQLiteDatabase db = this.getWritableDatabase(SycretWare.getDBKey());
-//        SQLiteDatabase db = this.getWritableDatabase("abcdefg");
 
         long id = db.insert(TABLE_NAME, null, values);
         db.close();
@@ -87,7 +86,6 @@ public class DBHandler extends SQLiteOpenHelper {
         String query = "SELECT * FROM "+TABLE_NAME + " WHERE "+ COLUMN_ID+"= \""
                 +primaryKey+"\"";
         SQLiteDatabase db = this.getWritableDatabase(SycretWare.getDBKey());
-//        SQLiteDatabase db = this.getWritableDatabase("abcdefg");
         Cursor cursor = db.rawQuery(query, null);
         /*
          * id값으로 row를 조회한 뒤 실제 id와 조회된 id가 같은지 check 후
@@ -118,7 +116,6 @@ public class DBHandler extends SQLiteOpenHelper {
                 break;
         }
         SQLiteDatabase db = this.getWritableDatabase(SycretWare.getDBKey());
-//        SQLiteDatabase db = this.getWritableDatabase("abcdefg");
 
         Cursor cursor = db.rawQuery(query, null);
         if(cursor.moveToFirst()){
@@ -139,7 +136,6 @@ public class DBHandler extends SQLiteOpenHelper {
         //select * from tablename where id= "+"(select Max(id) from tablename)";
         String query ="SELECT * FROM "+TABLE_NAME+" WHERE id = "+"(SELECT MAX(id) FROM "+TABLE_NAME+")";
         SQLiteDatabase db = this.getWritableDatabase(SycretWare.getDBKey());
-//    SQLiteDatabase db = this.getWritableDatabase("abcdefg");
         Cursor cursor = db.rawQuery(query, null);
         if(cursor.moveToFirst()){
             Record record = new Record(cursor.getInt(0),cursor.getString(1),cursor.getString(2),
