@@ -106,13 +106,13 @@ public class LoginPresenterImpl implements LoginPresenter {
                                 e.printStackTrace();
                             }
                         }
-//                        if(trKey == null){
+                        if(trKey == null){
                           /*
                          * start
                          * test 진행 후 삭제
                          */
 
-                        if(true){
+//                        if(true){
                         /*
                          * end
                          * test 진행 후 삭제
@@ -177,22 +177,20 @@ public class LoginPresenterImpl implements LoginPresenter {
     public void sendLoginRequest(final String userId, String password) {
 
         try {
-//            ExportKey trKey = SycretWare.getEncryptionKey(SycretWare.TRAFFIC_KEY);
+            ExportKey trKey = SycretWare.getEncryptionKey(SycretWare.TRAFFIC_KEY);
+            Log.d("TEST", "trkey :"+String.valueOf(trKey.getKey()));
             String pwHash = Hash.HashString((String)null,password);
             final LoginRequest loginRequest = new LoginRequest(userId,pwHash);
             final ObjectMapper mapper = new ObjectMapper();
 
             final String jsonString = mapper.writeValueAsString(loginRequest);
-//            String encJsonString =SycretWare.getProvider().encrypt.encryptBase64(
-//                    Encrypt.ENCRYPT,jsonString,"UTF-8",trKey);
-            String tempTrKey = Hash.HashString((String)null,SycretWare.getDeviceIdBas64Encoded());
-            final String encJsonString = Encrypt.encrypt(true, jsonString,tempTrKey);
+            String encJsonString =SycretWare.getProvider().encrypt.encryptBase64(
+                    com.sycretware.security.Encrypt.ENCRYPT, jsonString, "UTF-8", trKey);
 
             final EncRequest encRequest = new EncRequest(encJsonString);
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
 
             Call<JsonResponse> call = apiService.requestLogin(SycretWare.getUrlEncodedDeviceId(), encRequest);
-//            Call<JsonResponse> call = apiService.requestLogin(SycretWare.getDeviceIdBas64Encoded(), encRequest);
             Log.d("TEST", String.valueOf(call.request().url()));
             call.enqueue(new Callback<JsonResponse>() {
                 @Override

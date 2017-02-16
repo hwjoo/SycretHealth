@@ -181,7 +181,7 @@ public class MainFragPresenterImpl implements MainFragPresenter {
                  * sqlite에 저장완료되면 server로 date 전송
                  */
                 if(result !=null){
-                    mMainFragView.showSnackBar("DATA 저장 완료");
+                    mMainFragView.showToast("내부 SQLite 저장 완료");
                     mMainFragView.getContainer().insertedRecord(); //insert되었다는것은 RecordFragment로 전달
                     insertFlag[0] = true;
                     sendInsertRequest(result);
@@ -214,16 +214,16 @@ public class MainFragPresenterImpl implements MainFragPresenter {
                     userId, record.getId(), record.getStep(), record.getStartTime(),
                     record.getEndTime(),record.getDate()
             );
+            ExportKey trKey = SycretWare.getEncryptionKey(SycretWare.TRAFFIC_KEY);
             final String jsonString = mapper.writeValueAsString(recordInsertRequest);
-            String tempTrKey = Hash.HashString((String)null, SycretWare.getDeviceIdBas64Encoded());
-            String encJsonString = Encrypt.encrypt(true, jsonString,tempTrKey);
+            String encJsonString =SycretWare.getProvider().encrypt.encryptBase64(
+                    com.sycretware.security.Encrypt.ENCRYPT, jsonString, "UTF-8", trKey);
 
             EncRequest encRequest = new EncRequest(encJsonString);
             final String encJsonForm = mapper.writeValueAsString(encRequest);
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
 
             Call<JsonResponse> call = apiService.requestInsertRecord(SycretWare.getUrlEncodedDeviceId(), encRequest);
-//            Call<JsonResponse> call = apiService.requestInsertRecord(SycretWare.getDeviceIdBas64Encoded(), encRequest);
             Log.d("TEST", String.valueOf(call.request().url()));
             call.enqueue(new Callback<JsonResponse>() {
                 @Override

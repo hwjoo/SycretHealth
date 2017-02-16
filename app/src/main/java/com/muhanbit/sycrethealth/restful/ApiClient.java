@@ -1,5 +1,8 @@
 package com.muhanbit.sycrethealth.restful;
 
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -16,10 +19,14 @@ public class ApiClient {
     }
 
     public static Retrofit getClient(){
+
         if(mRetrofit == null){
+            OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                    .connectTimeout(15, TimeUnit.SECONDS);
             mRetrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .addConverterFactory(JacksonConverterFactory.create())
+                    .client(builder.build())
                     .build();
         }
         return mRetrofit;

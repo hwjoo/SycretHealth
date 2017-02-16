@@ -12,6 +12,7 @@ import com.muhanbit.sycrethealth.presenter.LoginPresenterImpl;
 
 public interface MainFragView{
     void showSnackBar(String message);
+    void showToast(String message);
     void showTimePicker();
     void showPopupMenu();
     Context getViewContext();

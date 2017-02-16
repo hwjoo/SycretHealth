@@ -26,11 +26,11 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "sycrethealth.db";
     public static final String TABLE_NAME = "records";
 
-    public static final String COLUMN_ID ="id";
-    public static final String COLUMN_STEP = "step";
-    public static final String COLUMN_START_TIME = "start_time";
-    public static final String COLUMN_END_TIME = "end_time";
-    public static final String COLUMN_DATE = "date";
+    private static final String COLUMN_ID ="id";
+    private static final String COLUMN_STEP = "step";
+    private static final String COLUMN_START_TIME = "start_time";
+    private static final String COLUMN_END_TIME = "end_time";
+    private static final String COLUMN_DATE = "date";
 
     public static final int ORDER_BY_ASC = 1;
     public static final int ORDER_BY_DESC = 2;

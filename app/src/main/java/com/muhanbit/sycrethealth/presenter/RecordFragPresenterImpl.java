@@ -151,7 +151,6 @@ public class RecordFragPresenterImpl implements RecordFragPresenter,OnDeleteClic
 
                     return true;
                 }else{
-                    mRecordFragView.showSnackBar("삭제 실패.");
                     return  false;
                 }
             }
@@ -166,11 +165,11 @@ public class RecordFragPresenterImpl implements RecordFragPresenter,OnDeleteClic
                 if(result){
                     mRecordAdapterModel.removeRecordItem(position); //adapter model의 list중 선택 postion 삭제
                     mRecordAdapterView.notifyAdapter();
-                    mRecordFragView.showSnackBar("삭제되었습니다.");
+                    mRecordFragView.showToast("SQLite data 삭제완료");
                     sendDeleteRequest(recordItem);
 
                 }else{
-                    mRecordFragView.showSnackBar("삭제실패");
+                    mRecordFragView.showSnackBar("SQLite data 삭제실패");
                     mRecordFragView.progressOnOff(false);
                 }
 
@@ -194,9 +193,11 @@ public class RecordFragPresenterImpl implements RecordFragPresenter,OnDeleteClic
                     userId,record.getId(),record.getStep(),record.getStartTime(),
                     record.getEndTime(),record.getDate()
             );
+
+            ExportKey trKey = SycretWare.getEncryptionKey(SycretWare.TRAFFIC_KEY);
             final String jsonString = mapper.writeValueAsString(recordInsertRequest);
-            String tempTrKey = Hash.HashString((String)null, SycretWare.getDeviceIdBas64Encoded());
-            String encJsonString = Encrypt.encrypt(true, jsonString,tempTrKey);
+            String encJsonString =SycretWare.getProvider().encrypt.encryptBase64(
+                    com.sycretware.security.Encrypt.ENCRYPT, jsonString, "UTF-8", trKey);
 
             EncRequest encRequest = new EncRequest(encJsonString);
             final String encJsonForm = mapper.writeValueAsString(encRequest);

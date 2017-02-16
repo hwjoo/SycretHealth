@@ -140,6 +140,11 @@ public class MainFragment extends Fragment implements MainFragView,
     }
 
     @Override
+    public void showToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void showTimePicker() {
         TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(this,TIME_PICKER_HOUR,TIME_PICKER_MIN,true);
         /*

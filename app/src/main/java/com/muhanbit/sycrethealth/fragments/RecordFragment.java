@@ -140,6 +140,11 @@ public class RecordFragment extends Fragment implements RecordFragView, Containe
         Snackbar.make(mContainerView, message, Snackbar.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void showToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
 
     @Override
     public void progressOnOff(boolean on) {
